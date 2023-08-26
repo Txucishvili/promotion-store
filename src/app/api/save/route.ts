@@ -12,7 +12,7 @@ const file = join(process.cwd(), '/db/db.json')
 
 // const db = new Low(adapter, defaultData)
 const db = new LowSync(new JSONFileSync(file), {})
-const newDb = new CustomAsyncAdapter({ path: 'categories' });
+const newDb: any = new CustomAsyncAdapter({ path: 'categories' });
 
 export async function POST(req: any, res: any) {
   const data = await req.json();
