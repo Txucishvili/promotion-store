@@ -5,25 +5,18 @@ import { fileURLToPath } from "url";
 
 const rootPath = join(process.cwd(), "/db");
 
-class CustomAsyncAdapter {
+class CustomAsyncAdapter extends LowSync {
 	// Optional: your adapter can take arguments
-
+  // db: LowSync;
 	constructor(args: any) {
     const { path } = args;
-    // super(new JSONFileSync(join(rootPath, path)), {});
+    console.log('path', join(rootPath, path + '.json'))
+    super(new JSONFileSync(join(rootPath, path + '.json')), {});
 
-		this.db = new LowSync(new JSONFileSync(join(rootPath, path)), {});
-	}
-
-	async read() {
-		return data;
-	}
-
-	async write(data) {
-		await api.write(data);
+		// this.db = new LowSync(new JSONFileSync(join(rootPath, path)), {});
 	}
 }
 
 // db.json file path
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = join(process.cwd(), "/db/db.json");
+
+export {CustomAsyncAdapter}
