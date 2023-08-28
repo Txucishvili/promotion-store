@@ -1,5 +1,64 @@
 {
-  "posts": [
-    "some"
+  "result": [
+    {
+      "id": "33d37d9d-9350-4bf0-b5c9-2f044dacf025",
+      "data": {
+        "title": "eCommerce",
+        "tags": [
+          "#some",
+          "#tags",
+          ""
+        ]
+      }
+    },
+    {
+      "id": "6ac87d8d-addf-431c-9610-3ec53f4e0bcc",
+      "data": {
+        "title": "Electronic",
+        "tags": [
+          "#electro",
+          "#shop",
+          "#items",
+          "#container"
+        ]
+      }
+    },
+    {
+      "id": "21eabc0b-11ca-4d6b-88e4-35fa9b019db9",
+      "data": {
+        "title": "New Category",
+        "tags": [
+          "#electro",
+          "#shop",
+          "#items",
+          "#container",
+          "#electro",
+          "#shop",
+          "#items",
+          "#container",
+          "#electro",
+          "#shop",
+          "#items",
+          "#container",
+          "#electro",
+          "#shop",
+          "#items",
+          "#container",
+          "#electro",
+          "#shop",
+          "#items",
+          "#container",
+          "#electro",
+          "#shop",
+          "#items",
+          "#container",
+          "#electro",
+          "#shop",
+          "#items",
+          "#container",
+          ""
+        ]
+      }
+    }
   ]
 }
