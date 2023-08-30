@@ -1,5 +1,5 @@
 'use client'
-import { ForwardRefRenderFunction, Fragment, FunctionComponent, PropsWithChildren, createRef, forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { ForwardRefRenderFunction, Fragment, FunctionComponent, PropsWithChildren, createRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import InputField from "@/components/InputField";
 import { FormEvent } from "react";
 import AddForm, { FormRef } from "@/components/AddForm";
@@ -65,6 +65,10 @@ export function CategoryPage(props: any) {
       setItems(r);
     })
   }
+
+  useEffect(() => {
+    fetchItems();
+  }, [])
 
   const onCategorySubmit = (data: any) => {
     formRef.current?.loading(true);
