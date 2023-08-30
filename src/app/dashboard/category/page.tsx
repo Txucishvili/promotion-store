@@ -1,16 +1,23 @@
 import Image from 'next/image'
 import { CustomAsyncAdapter } from '@/utils/db-utils'
-import {CategoryPage} from './index'
-import { CategoryResponseType } from '@/app/api/category/route';
+import { CategoryPage } from './index'
+import prisma from '../../../utils/prisma'
 
-const newDb = new CustomAsyncAdapter<CategoryResponseType>({ path: 'categories' });
 
 export default async function Home() {
-  newDb.read();
+  const categories = await prisma.categorie.findMany({
+    include: {
+      tags: !true
+    }
+  })
+    .then((r) => {
+      console.log('r', r)
+      return r;
+    })
 
   return (
     <main>
-      <CategoryPage list={newDb.data.result} />
+      <CategoryPage list={categories} />
     </main>
   )
 }

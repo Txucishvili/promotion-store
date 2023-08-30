@@ -1,12 +1,12 @@
 'use client'
-import { CategoryItem } from "@/app/api/category/route";
 import { ForwardRefRenderFunction, Fragment, FunctionComponent, PropsWithChildren, createRef, forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import InputField from "@/components/InputField";
 import { FormEvent } from "react";
 import AddForm, { FormRef } from "@/components/AddForm";
+import { Category } from '@/app/api/category/route';
 
 interface CategoryListProps {
-  list: CategoryItem[];
+  list: Category[];
   onAction: any;
   loading?: boolean;
 }
@@ -14,8 +14,6 @@ interface CategoryListProps {
 export function CategoryList(props: CategoryListProps) {
 
   const { list, onAction } = props;
-
-  console.log('list', list.length)
 
   return (
     <div className="overflow-x-auto">
@@ -34,14 +32,14 @@ export function CategoryList(props: CategoryListProps) {
           {list.map((i) => {
             return <tr className="hover" key={i.id}>
               {/* <td>{i.id}</td> */}
-              <td>{i.data.title}</td>
-              <td>{i.data.tags.length}</td>
+              <td>{i.name}</td>
+              {/* <td>{i.tags.length}</td> */}
               <td className="flex flex-wrap">
-                {i.data.tags.length ? i.data.tags.map((tag: any, key: number) => {
+                {/* {i.tags.length ? i.tags.map((tag: any, key: number) => {
                   return <div key={key + '-' + i.id} className="badge badge-outline">
-                    {tag}
+                    {tag.name}
                   </div>
-                }) : null}
+                }) : null} */}
               </td>
               <td>
                 <div className="join">
@@ -64,20 +62,19 @@ export function CategoryPage(props: any) {
 
   const fetchItems = () => {
     fetch('/api/category').then((r) => r.json()).then((r) => {
-      console.log('fetch', r)
-      setItems(r.result);
+      setItems(r);
     })
   }
 
   const onCategorySubmit = (data: any) => {
-
     formRef.current?.loading(true);
 
+    console.log('data', data);
     fetch("/api/category", {
       method: "POST",
       body: JSON.stringify({
-        title: data.title,
-        tags: data.tags.split(" "),
+        name: data.title,
+        tags: data.tags.split(' ').map((t: any) => t.replace('#', '')),
       }),
     }).then(() => {
 

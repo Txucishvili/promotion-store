@@ -1,17 +1,17 @@
 import { CustomAsyncAdapter } from '@/utils/db-utils'
-import {ProductsPage} from './index'
-import { CategoryResponseType } from '@/app/api/category/route'
-
-const categoriesDB = new CustomAsyncAdapter<CategoryResponseType>({ path: 'categories' });
-const productDB = new CustomAsyncAdapter<CategoryResponseType>({ path: 'products' });
+// import { ProductsPage } from './index'
+import prisma from '../../../utils/prisma'
 
 export default async function Home() {
-  productDB.read();
-  categoriesDB.read();
+  // const products = await prisma.product.findMany();
+  // const categories = await prisma.categorie.findMany();
+
+  // console.log('products', prisma)
 
   return (
     <main>
-      <ProductsPage list={productDB.data.result} categories={categoriesDB.data.result} />
+      some
+      {/* <ProductsPage list={[]} categories={categories} /> */}
     </main>
   )
 }
