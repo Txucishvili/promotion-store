@@ -7,13 +7,17 @@ import prisma from '../../../utils/prisma'
 export default async function Home() {
   const categories = await prisma.categorie.findMany({
     include: {
-      tags: !true
+      tags: true
     }
   })
     .then((r) => {
       // console.log('r', r)
       return r;
     })
+
+  console.log('cc', categories)
+
+  // return null
 
   return (
     <main>

@@ -33,13 +33,13 @@ export function CategoryList(props: CategoryListProps) {
             return <tr className="hover" key={i.id}>
               {/* <td>{i.id}</td> */}
               <td>{i.name}</td>
-              {/* <td>{i.tags.length}</td> */}
+              <td>{i.tags.length}</td>
               <td className="flex flex-wrap">
-                {/* {i.tags.length ? i.tags.map((tag: any, key: number) => {
+                {i.tags.length ? i.tags.map((tag: any, key: number) => {
                   return <div key={key + '-' + i.id} className="badge badge-outline">
                     {tag.name}
                   </div>
-                }) : null} */}
+                }) : null}
               </td>
               <td>
                 <div className="join">
@@ -60,8 +60,12 @@ export function CategoryPage(props: any) {
   const [itemList, setItems] = useState(list);
   const formRef = useRef<FormRef>(null);
 
+  console.log('list', list)
+  // return null
+
   const fetchItems = () => {
     fetch('/api/category').then((r) => r.json()).then((r) => {
+      console.log('r', r)
       setItems(r);
     })
   }
@@ -103,7 +107,7 @@ export function CategoryPage(props: any) {
 
   return (
     <Fragment>
-      <dialog id="my_modal_3" className="modal">
+      <dialog id="formmodal" className="modal">
         <div className="modal-box">
           <AddForm title="კატეგორიის დამატება" ref={formRef} onSubmit={onCategorySubmit}>
             <InputField name="title" label={"სახელი"} />
@@ -116,7 +120,7 @@ export function CategoryPage(props: any) {
           <h1 className='text-xl'>კატეგორიები - ({list.length})</h1>
         </div>
         <div className="div">
-          <button className="btn" onClick={() => window.my_modal_3.showModal()}>ახალი კატეგორია</button>
+          <button className="btn" onClick={() => window.formmodal.showModal()}>ახალი კატეგორია</button>
         </div>
       </div>
       <br />

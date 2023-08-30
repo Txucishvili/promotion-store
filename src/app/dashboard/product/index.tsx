@@ -10,7 +10,7 @@ export type ACTION_TYPES = 'EDIT' | 'DELETE' | 'SAVE';
 
 export enum FormFieldsEnum {
   id = 'id',
-  title = 'title',
+  name = 'name',
   category = 'category',
   categoryId = 'categoryId',
   photo_main = 'photo_main',
@@ -73,7 +73,7 @@ export function CategoryList(props: ProductListProps) {
                         <img
                           width={100}
                           src={
-                            i.data.photo_main ||
+                            i.photo_main ||
                             "https://media.istockphoto.com/id/931643150/vector/picture-icon.jpg?s=1024x1024&w=is&k=20&c=UQ4nLSvmPcDRCU45WTvex8V39_wHHZBZdJSXe9o_BRs="
                           }
                           alt="Avatar Tailwind CSS Component"
@@ -82,7 +82,7 @@ export function CategoryList(props: ProductListProps) {
                     </div>
                     <div>
                       <div className="font-bold">
-                        {i.data.title || "no-title"}
+                        {i.title || "no-title"}
                       </div>
                       <div className="text-sm opacity-50">
                         {categories.find((item) => item.id == i.data.categoryId)
@@ -103,7 +103,7 @@ export function CategoryList(props: ProductListProps) {
                         }) : 'no tags'
                   }
                 </td>
-                <td>{i.data.orders || 0}</td>
+                <td>{i.orders || 0}</td>
                 <th>
                   <div className="join">
                     <button onClick={() => onAction({ type: 'EDIT', data: i })} className="join-item btn  btn-neutral">Edit</button>
@@ -132,13 +132,16 @@ export function ProductsPage(props: any) {
   const modalStateType = useRef(null);
   const activeItem = useRef(null);
 
+  console.log('object', list, categories);
+
+
   const [editItemId, setEditItem] = useState<string | null>(null);
 
-  const editItem = useMemo(() => {
-    const item = itemList.find((i: any) => i.id === editItemId);
-    // console.log('item', item);
-    return item
-  }, [editItemId, itemList])
+  // const editItem = useMemo(() => {
+  //   const item = itemList.find((i: any) => i.id === editItemId);
+  //   // console.log('item', item);
+  //   return item
+  // }, [editItemId, itemList])
 
   const fetchItems = () => {
     fetch("/api/product")
@@ -164,33 +167,38 @@ export function ProductsPage(props: any) {
     } = data;
     formRef.current?.loading(true);
 
-    if (modalStateType.current == 'EDIT') {
-      // console.log('----', data)
-      fetch("/api/product", {
-        method: "PATCH",
-        body: JSON.stringify({
-          id: editItemId,
-          data: data,
-        }),
-      }).then(() => {
-        fetchItems();
-        formRef.current?.loading(false);
-        window.formmodal.close();
-        setEditItem(null);
-      });
-      return;
-    }
+    // if (modalStateType.current == 'EDIT') {
+    //   // console.log('----', data)
+    //   fetch("/api/product", {
+    //     method: "PATCH",
+    //     body: JSON.stringify({
+    //       id: editItemId,
+    //       data: data,
+    //     }),
+    //   }).then(() => {
+    //     fetchItems();
+    //     formRef.current?.loading(false);
+    //     window.formmodal.close();
+    //     setEditItem(null);
+    //   });
+    //   return;
+    // }
+
+    console.log('r', data);
+
 
     fetch("/api/product", {
       method: "POST",
       body: JSON.stringify(data),
-    }).then(() => {
+    }).then((r) => {
+      console.log('r', r);
+      return;
       formRef.current?.reset();
       setTimeout(() => {
         formRef.current?.loading(false);
       }, 500);
 
-      fetchItems();
+      // fetchItems();
       // window.formmodal.close()
     });
   };
@@ -234,7 +242,7 @@ export function ProductsPage(props: any) {
             ref={formRef}
             onSubmit={onCategorySubmit}
           >
-            <InputField name={FormFieldsEnum.title} label={"სახელი"} value={'some title'} />
+            <InputField name={FormFieldsEnum.name} label={"სახელი"} value={'some title'} />
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">კატეგორია</span>
@@ -246,7 +254,7 @@ export function ProductsPage(props: any) {
                 {categories.map((c) => {
                   return (
                     <option key={c.id} value={c.id}>
-                      {c.data.title}
+                      {c.name}
                     </option>
                   );
                 })}

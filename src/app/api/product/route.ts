@@ -27,7 +27,7 @@ export type ProductResponse = {
 
 export async function POST(req: any, res: any) {
 	const data = await req.json();
-
+  console.log('data', data)
 	const resp = await prisma.product.create({
 		data: data,
 	});
