@@ -136,7 +136,7 @@ export function ProductsPage(props: any) {
 
   const editItem = useMemo(() => {
     const item = itemList.find((i: any) => i.id === editItemId);
-    console.log('item', item);
+    // console.log('item', item);
     return item
   }, [editItemId, itemList])
 
@@ -144,7 +144,7 @@ export function ProductsPage(props: any) {
     fetch("/api/product")
       .then((r) => r.json())
       .then((r) => {
-        console.log("fetch", r);
+        // console.log("fetch", r);
         setItems(r.result);
       });
   };
@@ -165,7 +165,7 @@ export function ProductsPage(props: any) {
     formRef.current?.loading(true);
 
     if (modalStateType.current == 'EDIT') {
-      console.log('----', data)
+      // console.log('----', data)
       fetch("/api/product", {
         method: "PATCH",
         body: JSON.stringify({
@@ -210,7 +210,7 @@ export function ProductsPage(props: any) {
       window.formmodal.showModal();
       setEditItem(item.data.id);
 
-      console.log(formRef.current?.ref);
+      // console.log(formRef.current?.ref);
 
       Object.values(FormFieldsEnum).forEach((e) => {
         const el = formRef.current?.ref?.elements.namedItem(e) as HTMLInputElement;

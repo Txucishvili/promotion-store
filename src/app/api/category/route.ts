@@ -13,11 +13,11 @@ export type Category = {
 export async function POST(req: any, res: any) {
   const { name, tags } = await req.json();
 
-  console.log('object', tags.map((t: string) => {
-    return {
-      name: t
-    }
-  }))
+  // console.log('object', tags.map((t: string) => {
+  //   return {
+  //     name: t
+  //   }
+  // }))
 
   const categories = await prisma.categorie.create({
     data: {
@@ -33,7 +33,7 @@ export async function POST(req: any, res: any) {
     }
   });
 
-  console.log('categories', categories)
+  // console.log('categories', categories)
 
   return NextResponse.json(categories)
 }
@@ -57,7 +57,7 @@ export async function DELETE(req: any, res: any) {
     }
   })
 
-  console.log('data', data)
+  // console.log('data', data)
 
   return NextResponse.json({
     status: 200

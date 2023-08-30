@@ -40,7 +40,7 @@ class CustomAsyncAdapter<T> extends LowSync<T>  {
   // db: LowSync;
 	constructor(args: any) {
     const { path } = args;
-    console.log('path', join(rootPath, path + '.json'))
+    // console.log('path', join(rootPath, path + '.json'))
     super(new Adapter(join(rootPath, path + '.json')), {});
 
 		// this.db = new LowSync(new JSONFileSync(join(rootPath, path)), {});

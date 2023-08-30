@@ -73,7 +73,7 @@ export function CategoryPage(props: any) {
   const onCategorySubmit = (data: any) => {
     formRef.current?.loading(true);
 
-    console.log('data', data);
+    // console.log('data', data);
     fetch("/api/category", {
       method: "POST",
       body: JSON.stringify({

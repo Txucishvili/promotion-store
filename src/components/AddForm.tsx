@@ -73,7 +73,7 @@ const Form: ForwardRefRenderFunction<
 		for (const key in e.currentTarget.elements) {
 			if (Object.prototype.hasOwnProperty.call(e.currentTarget.elements, key)) {
 				const element = e.currentTarget.elements[key];
-				console.log("element", element.name);
+				// console.log("element", element.name);
 				if (element.name) {
 					Object.assign(formFileds, {
 						[element.name]: element.value,
@@ -81,7 +81,7 @@ const Form: ForwardRefRenderFunction<
 				}
 			}
 		}
-		console.log("element", formFileds);
+		// console.log("element", formFileds);
 
 		props.onSubmit(formFileds);
 	};

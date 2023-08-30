@@ -11,7 +11,7 @@ export default async function Home() {
     }
   })
     .then((r) => {
-      console.log('r', r)
+      // console.log('r', r)
       return r;
     })
 
