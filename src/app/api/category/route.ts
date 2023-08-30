@@ -18,6 +18,7 @@ export async function POST(req: any, res: any) {
   //     name: t
   //   }
   // }))
+  
 
   const categories = await prisma.categorie.create({
     data: {
