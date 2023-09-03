@@ -13,8 +13,10 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.0.10",
     "@prisma/client": "^5.2.0",
     "@tailwindcss/typography": "^0.5.9",
+    "@tremor/react": "^3.6.6",
     "@types/node": "20.5.1",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",

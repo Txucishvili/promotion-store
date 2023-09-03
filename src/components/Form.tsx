@@ -15,7 +15,7 @@ export interface FormRef {
 	loading: any;
 	reset: any;
 	toggleCheckmark: any;
-  ref: HTMLFormElement | null;
+	ref: HTMLFormElement | null;
 }
 
 export interface ComponentProps {
@@ -41,7 +41,7 @@ const Form: ForwardRefRenderFunction<
 		ref,
 		() => {
 			return {
-        ref: inputRef.current,
+				ref: inputRef.current,
 				loading: (value: boolean) => {
 					setLoading(value);
 				},
@@ -63,22 +63,70 @@ const Form: ForwardRefRenderFunction<
 
 	const handleForm = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const title = e.currentTarget.elements.namedItem(
-			"title"
-		) as HTMLInputElement;
-		const tags = e.currentTarget.elements.namedItem("tags") as HTMLInputElement;
+		
+		const elements: HTMLFormControlsCollection = e.currentTarget.elements;
+		const formFileds: any = {};
 
-		const formFileds = {};
+		const elementNames = new Set(
+			Array.from(elements)
+				.filter((i: HTMLInputElement) => i.name.length)
+				.map((i: HTMLInputElement) => String(i.name))
+		);
 
-		for (const key in e.currentTarget.elements) {
-			if (Object.prototype.hasOwnProperty.call(e.currentTarget.elements, key)) {
-				const element = e.currentTarget.elements[key];
-				// console.log("element", element.name);
-				if (element.name) {
-					Object.assign(formFileds, {
-						[element.name]: element.value,
-					});
+		for (const key of Array.from(elementNames)) {
+			if (Object.prototype.hasOwnProperty.call(elements, key)) {
+				const element = elements.namedItem(
+					key
+				) as HTMLInputElement;
+
+				if (element instanceof RadioNodeList) {
+					for (const i of Array.from(element) as HTMLInputElement[]) {
+						if (i.type === "radio") {
+							Object.assign(formFileds, {
+								[key]: element.value,
+							});
+							continue;
+						}
+
+						if (i.type == "checkbox") {
+							if (!formFileds[key]) {
+								Object.assign(formFileds, {
+									[key]: [],
+								});
+							}
+
+							if (i.checked) {
+								Object.assign(formFileds, {
+									[key]: formFileds[key].concat(i.value),
+								});
+							}
+							continue;
+						}
+
+						if (!formFileds[key]) {
+							Object.assign(formFileds, {
+								[key]: [i.value],
+							});
+						} else {
+							Object.assign(formFileds, {
+								[key]: formFileds[key].concat(i.value),
+							});
+						}
+						continue;
+					}
+					continue;
 				}
+
+				if (element.type == "checkbox") {
+					Object.assign(formFileds, {
+						[element.name]: element.checked,
+					});
+					continue;
+				}
+
+				Object.assign(formFileds, {
+					[element.name]: element.value,
+				});
 			}
 		}
 		// console.log("element", formFileds);
@@ -86,7 +134,7 @@ const Form: ForwardRefRenderFunction<
 		props.onSubmit(formFileds);
 	};
 	return (
-		<form onSubmit={handleForm} ref={inputRef}>
+		<form onSubmit={handleForm} ref={inputRef} method="POST">
 			<h3 className="font-bold text-lg">{title}</h3>
 			<div className="divider"></div>
 			{children}
@@ -137,5 +185,5 @@ const Form: ForwardRefRenderFunction<
 	);
 };
 
-export const AddForm = forwardRef(Form);
-export default AddForm;
+export const FormContainer = forwardRef(Form);
+export default FormContainer;

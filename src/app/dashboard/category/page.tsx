@@ -13,7 +13,10 @@ export default async function Home() {
     .then((r) => {
       // console.log('r', r)
       return r;
-    })
+    }).catch((e) => {
+      console.log("error", e)
+      return [];
+    });
 
   console.log('cc', categories)
 

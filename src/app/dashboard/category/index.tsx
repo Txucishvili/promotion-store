@@ -2,7 +2,7 @@
 import { ForwardRefRenderFunction, Fragment, FunctionComponent, PropsWithChildren, createRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import InputField from "@/components/InputField";
 import { FormEvent } from "react";
-import AddForm, { FormRef } from "@/components/AddForm";
+import FormContainer, { FormRef } from "@/components/Form";
 import { Category } from '@/app/api/category/route';
 
 interface CategoryListProps {
@@ -109,10 +109,10 @@ export function CategoryPage(props: any) {
     <Fragment>
       <dialog id="formmodal" className="modal">
         <div className="modal-box">
-          <AddForm title="კატეგორიის დამატება" ref={formRef} onSubmit={onCategorySubmit}>
+          <FormContainer title="კატეგორიის დამატება" ref={formRef} onSubmit={onCategorySubmit}>
             <InputField name="title" label={"სახელი"} />
             <InputField name="tags" label={"თეგები"} />
-          </AddForm>
+          </FormContainer>
         </div>
       </dialog>
       <div className='flex px-4 py-8 '>

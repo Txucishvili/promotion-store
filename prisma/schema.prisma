@@ -41,8 +41,10 @@ model product {
   descriptions  String[]
   photo_main    String
   photo_gallery String[]
-  details       String
   categories    categorie @relation(fields: [categoryId], references: [id])
-  categoryId    String[]  @db.ObjectId
+  categoryId    String  @db.ObjectId
+  show          Boolean   @default(false)
+  timer         Boolean   @default(false)
+  endDate       DateTime?
   createdAt     DateTime  @default(now())
 }

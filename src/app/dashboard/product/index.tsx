@@ -1,25 +1,25 @@
 "use client";
 import { Fragment, useMemo, useRef, useState } from "react";
 import InputField from "@/components/InputField";
-import AddForm, { FormRef } from "@/components/AddForm";
+import FormContainer, { FormRef } from "@/components/Form";
 import { ProductItem } from "@/app/api/product/route";
-import { CategoryItem } from "@/app/api/category/route";
 import Image from "next/image";
 
-export type ACTION_TYPES = 'EDIT' | 'DELETE' | 'SAVE';
+export type ACTION_TYPES = "EDIT" | "DELETE" | "SAVE" | 'VIEW';
 
 export enum FormFieldsEnum {
-  id = 'id',
-  name = 'name',
-  category = 'category',
-  categoryId = 'categoryId',
-  photo_main = 'photo_main',
-  photo_1 = 'photo_1',
-  desc_1 = 'desc_1',
-  desc_2 = 'desc_2',
-  timer = 'timer',
-  show = 'show',
-  bio = 'bio'
+  id = "id",
+  name = "name",
+  descriptions = "descriptions",
+  photo_main = "photo_main",
+  photo_gallery = "photo_gallery",
+  // details = "details",
+  categories = "categories",
+  categoryId = "categoryId",
+  show = "show",
+  timer = "timer",
+  endDate = "endDate",
+  orders = "orders",
 }
 
 type ActionType = {
@@ -29,7 +29,7 @@ type ActionType = {
 
 interface ProductListProps {
   list: ProductItem[];
-  categories: CategoryItem[];
+  categories: any[];
   onAction: (e: ActionType) => void;
   loading?: boolean;
 }
@@ -40,7 +40,6 @@ export function CategoryList(props: ProductListProps) {
   return (
     <div className="overflow-x-auto">
       <div className="overflow-x-auto"></div>
-      {FormFieldsEnum.category}
       <table className="table">
         {/* head */}
         <thead>
@@ -58,7 +57,7 @@ export function CategoryList(props: ProductListProps) {
         </thead>
         <tbody>
           {/* row 1 */}
-          {list.map((i) => {
+          {list.length ? list.map((i) => {
             return (
               <tr key={i.id} className="hover">
                 <th>
@@ -81,34 +80,43 @@ export function CategoryList(props: ProductListProps) {
                       </div>
                     </div>
                     <div>
-                      <div className="font-bold">
-                        {i.title || "no-title"}
-                      </div>
+                      <div className="font-bold">{i.name || "no-title"}</div>
                       <div className="text-sm opacity-50">
-                        {categories.find((item) => item.id == i.data.categoryId)
-                          ?.data.title || "no category"}
+                        {i.categories.name}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td>
-                  {/* {categories.find(item => (item.id == i.data.categoryId))?.data.title} */}
-                  {
-                    categories.find((item) => item.id == i.data.categoryId)
-                      ?.data.tags ? categories.find((item) => item.id == i.data.categoryId)
-                        ?.data.tags.map((t, key: number) => {
-                          return <span key={key + '-' + t} className="badge badge-ghost badge-sm">
-                            {t}
-                          </span>
-                        }) : 'no tags'
-                  }
+                  {i.categories.tags.length ?
+                    i.categories.tags.map((t, key: number) => {
+                      return (
+                        <span
+                          key={t.id}
+                          className="badge badge-ghost badge-sm"
+                        >
+                          {t.name}
+                        </span>
+                      );
+                    }) : null}
                 </td>
                 <td>{i.orders || 0}</td>
                 <th>
                   <div className="join">
-                    <button onClick={() => onAction({ type: 'EDIT', data: i })} className="join-item btn  btn-neutral">Edit</button>
                     <button
-                      onClick={() => onAction({ type: 'DELETE', data: i.id })}
+                      onClick={() => onAction({ type: "VIEW", data: i })}
+                      className="join-item btn  btn-neutral"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => onAction({ type: "EDIT", data: i })}
+                      className="join-item btn  btn-neutral"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => onAction({ type: "DELETE", data: i.id })}
                       className="join-item btn  btn-neutral"
                     >
                       Delete
@@ -118,11 +126,38 @@ export function CategoryList(props: ProductListProps) {
                 </th>
               </tr>
             );
-          })}
+          }) : <tr>
+            <th>No Data</th>
+          </tr>}
         </tbody>
       </table>
     </div>
   );
+}
+
+function DynamicPhoto(parameters: any): any {
+  const [fields, setFields] = useState(['']);
+
+  const addField = () => {
+    const newFields = [
+      ...fields,
+      ''
+    ]
+    setFields(newFields)
+  }
+
+  return (
+    <Fragment>
+      {fields.map((f, k) => {
+        return (
+          <InputField key={k} name={`photo_gallery`} label={`ფოტო ${k}`} />
+        )
+      })}
+      <div className="py-4">
+        <button onClick={addField} type="button" className="btn btn-block btn-sm">Add photo</button>
+      </div>
+    </Fragment>
+  )
 }
 
 export function ProductsPage(props: any) {
@@ -131,9 +166,6 @@ export function ProductsPage(props: any) {
   const formRef = useRef<FormRef>(null);
   const modalStateType = useRef(null);
   const activeItem = useRef(null);
-
-  console.log('object', list, categories);
-
 
   const [editItemId, setEditItem] = useState<string | null>(null);
 
@@ -148,24 +180,28 @@ export function ProductsPage(props: any) {
       .then((r) => r.json())
       .then((r) => {
         // console.log("fetch", r);
-        setItems(r.result);
+        setItems(r);
       });
   };
 
   const onCategorySubmit = (data: ProductItem) => {
     const {
-      title,
-      categoryId,
-      category,
-      desc_1,
-      desc_2,
+      id,
+      name,
+      descriptions,
+      photo_gallery,
       photo_main,
-      photo_1,
-      timer,
-      bio,
+      categories,
+      categoryId,
+      endDate,
       show,
+      timer
     } = data;
-    formRef.current?.loading(true);
+
+    console.log('FormData', data);
+    // return;
+
+    const desc = [descriptions]
 
     // if (modalStateType.current == 'EDIT') {
     //   // console.log('----', data)
@@ -184,70 +220,85 @@ export function ProductsPage(props: any) {
     //   return;
     // }
 
-    console.log('r', data);
-
+    // formRef.current?.loading(true);
 
     fetch("/api/product", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify(Object.assign(data, {
+        descriptions: desc,
+        photo_gallery: typeof photo_gallery === 'string' ? [photo_gallery] : photo_gallery
+      })),
     }).then((r) => {
-      console.log('r', r);
-      return;
       formRef.current?.reset();
+
       setTimeout(() => {
         formRef.current?.loading(false);
       }, 500);
 
-      // fetchItems();
+      fetchItems();
       // window.formmodal.close()
+    }).catch((e) => {
+      formRef.current?.loading(false);
     });
   };
 
-  const onListAction = (item: ActionType) => {
-    if (item.type === 'DELETE') {
+  const onListAction = (item) => {
+    if (item.type === "DELETE") {
       fetch("/api/product", {
         method: "DELETE",
         body: JSON.stringify(item.data),
       }).then(() => {
         fetchItems();
       });
-      modalStateType.current = 'DELETE';
+      // modalStateType.current = "DELETE";
     }
 
-    if (item.type === 'EDIT') {
-      window.formmodal.showModal();
-      setEditItem(item.data.id);
+    if (item.type === "EDIT") {
+      // window.formmodal.showModal();
+      // setEditItem(item.data.id);
 
       // console.log(formRef.current?.ref);
 
       Object.values(FormFieldsEnum).forEach((e) => {
-        const el = formRef.current?.ref?.elements.namedItem(e) as HTMLInputElement;
+        const el = formRef.current?.ref?.elements.namedItem(
+          e
+        ) as HTMLInputElement;
         if (el) {
           el.value = item.data.data[e];
         }
-      })
-      modalStateType.current = 'EDIT';
-      activeItem.current = item.data;
+      });
+      // modalStateType.current = "EDIT";
+      // activeItem.current = item.data;
     }
   };
 
   return (
-
     <Fragment>
       {editItemId}
       <dialog id="formmodal" className="modal">
         <div className="modal-box">
-          <AddForm
-            title={modalStateType.current == 'EDIT' ? "პროდუქტის რედაქტირება" : "ახალი პროდუქტის დამატება"}
+          <FormContainer
+            title={
+              modalStateType.current == "EDIT"
+                ? "პროდუქტის რედაქტირება"
+                : "ახალი პროდუქტის დამატება"
+            }
             ref={formRef}
             onSubmit={onCategorySubmit}
           >
-            <InputField name={FormFieldsEnum.name} label={"სახელი"} value={'some title'} />
+            <InputField
+              name={FormFieldsEnum.name}
+              label={"სახელი"}
+              value={"some title"}
+            />
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">კატეგორია</span>
               </label>
-              <select name={FormFieldsEnum.categoryId} className="select select-bordered">
+              <select
+                name={FormFieldsEnum.categoryId}
+                className="select select-bordered"
+              >
                 {/* <option disabled selected defaultValue={'some'}>
                   კატეგორია
                 </option> */}
@@ -261,18 +312,16 @@ export function ProductsPage(props: any) {
               </select>
             </div>
 
-            {/* <InputField name="categoryId" label={"კატეგორია"} /> */}
-            <InputField name={FormFieldsEnum.desc_1} label={"აღწერა"} />
-            <InputField name={FormFieldsEnum.desc_2} label={"აღწერა 2"} />
+            {/* <InputField name={FormFieldsEnum.descriptions} label={"აღწერა"} /> */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Your bio</span>
-                <span className="label-text-alt">Alt label</span>
+                <span className="label-text">აღწერა</span>
+                {/* <span className="label-text-alt">Alt label</span> */}
               </label>
               <textarea
                 className="textarea textarea-bordered h-24"
                 placeholder="Bio"
-                name="bio"
+                name={FormFieldsEnum.descriptions}
               ></textarea>
             </div>
             <div className="form-control">
@@ -286,6 +335,9 @@ export function ProductsPage(props: any) {
                 />
               </label>
             </div>
+            {
+
+            }
             <div className="form-control">
               <label className="label cursor-pointer">
                 <span className="label-text">გამოჩენა:</span>
@@ -298,12 +350,15 @@ export function ProductsPage(props: any) {
               </label>
             </div>
             <div className="divider"></div>
-            <InputField name={FormFieldsEnum.photo_main} label={"მთავარი ფოტო"} />
-            <InputField name={FormFieldsEnum.photo_1} label={"ფოტო 1"} />
-            <InputField name={FormFieldsEnum.photo_2} label={"ფოტო 2"} />
-            <InputField name="photo_3" label={"ფოტო 3"} />
-            <InputField name="photo_4" label={"ფოტო 4"} />
-          </AddForm>
+            <InputField
+              name={FormFieldsEnum.photo_main}
+              label={"მთავარი ფოტო"}
+            />
+            <DynamicPhoto></DynamicPhoto>
+            {/* <InputField name={FormFieldsEnum.photo_2} label={"ფოტო 2"} /> */}
+            {/* <InputField name="photo_3" label={"ფოტო 3"} /> */}
+            {/* <InputField name="photo_4" label={"ფოტო 4"} /> */}
+          </FormContainer>
         </div>
       </dialog>
       <div className="flex px-4 py-8 ">

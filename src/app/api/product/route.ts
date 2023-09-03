@@ -4,59 +4,60 @@ import { v4 as uuidv4 } from "uuid";
 import { DBItemType } from "@/db";
 import { FormFieldsEnum } from "@/app/dashboard/product";
 import prisma from "@/utils/prisma";
+import { Category } from "../category/route";
 
 export type ProductItem = {
-	[FormFieldsEnum.id]: any;
-	[FormFieldsEnum.title]: string;
-	[FormFieldsEnum.category]: string;
-	[FormFieldsEnum.categoryId]: string;
-	[FormFieldsEnum.desc_1]: string;
-	[FormFieldsEnum.desc_2]: string;
-	[FormFieldsEnum.photo_main]: string;
-	[FormFieldsEnum.photo_1]: string;
-	[FormFieldsEnum.timer]: boolean;
-	[FormFieldsEnum.show]: boolean;
-	[FormFieldsEnum.bio]: string;
+  [FormFieldsEnum.id]: any;
+  [FormFieldsEnum.name]: string;
+  [FormFieldsEnum.descriptions]: string[];
+  [FormFieldsEnum.photo_main]: string;
+  [FormFieldsEnum.photo_gallery]: string[];
+  [FormFieldsEnum.categories]?: Category;
+  [FormFieldsEnum.categoryId]?: string;
+  [FormFieldsEnum.show]: boolean;
+  [FormFieldsEnum.timer]: boolean;
+  [FormFieldsEnum.orders]?: boolean;
+  [FormFieldsEnum.endDate]?: Date;
 };
-
-export type ProductResponse = {
-	result: DBItemType<ProductItem>[];
-	total: any;
-};
-
 
 export async function POST(req: any, res: any) {
-	const data = await req.json();
+  const data = await req.json();
   console.log('data', data)
-	const resp = await prisma.product.create({
-		data: data,
-	});
 
-	return NextResponse.json(resp);
+
+  const resp = await prisma.product.create({  
+    data: data,
+  });
+
+  return NextResponse.json(resp);
 }
 
 export async function GET() {
-	const resp = prisma.product.findMany({
-		include: {
-			categories: true,
-		},
-	});
-	return NextResponse.json(resp);
+  const resp = await prisma.product.findMany({
+    include: {
+      categories: {
+        include: {
+          tags: true
+        }
+      }
+    },
+  });
+  return NextResponse.json(resp);
 }
 
 export async function DELETE(req: any, res: any) {
-	const id = await req.json();
+  const id = await req.json();
 
-	const resp = prisma.product.delete({
-		where: {
-			id,
-		},
-	});
+  const resp = await prisma.product.delete({
+    where: {
+      id,
+    },
+  });
 
-	return NextResponse.json({
-		status: 200,
+  return NextResponse.json({
+    status: 200,
     data: resp
-	});
+  });
 }
 
 // export async function PATCH(req: any, res: any) {

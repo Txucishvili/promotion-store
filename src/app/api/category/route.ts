@@ -6,7 +6,7 @@ import prisma from '@/utils/prisma';
 export type Category = {
   id: any;
   name: string;
-  tags: string[];
+  tags: any[];
 }
 
 

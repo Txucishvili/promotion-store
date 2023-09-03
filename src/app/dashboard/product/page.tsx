@@ -1,18 +1,32 @@
-import { CustomAsyncAdapter } from '@/utils/db-utils'
+import { CustomAsyncAdapter } from "@/utils/db-utils";
 // import { ProductsPage } from './index'
-import prisma from '../../../utils/prisma'
-import { ProductsPage } from '.'
+import prisma from "../../../utils/prisma";
+import { ProductsPage } from ".";
 
 export default async function Home() {
-  const products = await prisma.product.findMany();
-  const categories = await prisma.categorie.findMany();
+	const products = await prisma.product
+		.findMany({
+			include: {
+				categories: {
+					include: {
+						tags: true,
+					},
+				},
+			},
+		})
+		.catch((e) => {
+			console.log("error", e);
+			return [];
+		});
+	const categories = await prisma.categorie.findMany().catch((e) => {
+		console.log("error", e);
+		return [];
+	});
 
-  // console.log('products', prisma)
-
-  return (
-    <main>
-      {/* some */}
-      <ProductsPage list={products} categories={categories} />
-    </main>
-  )
+	return (
+		<main>
+			{/* some */}
+			<ProductsPage list={products} categories={categories} />
+		</main>
+	);
 }
