@@ -1,10 +1,25 @@
+import prisma from "@/utils/prisma";
+
 export const dynamicParams = true // true | false,
 
 
-export default function Home(props) {
+export default async function Home(props) {
+  const { params: { category } } = props;
+  
   console.log('page id', props)
 
-  const { params: { id } } = props;
+  const product = await prisma.product.findMany({
+    include: {
+      categories: {
+        include: {
+          tags: true
+        }
+      }
+    }
+  })
+
+  console.log('product', product)
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-4 xs:p-12 lg:p-24">
@@ -144,7 +159,7 @@ export default function Home(props) {
                   </svg>
                 </a>
               </div>
-              <div className="w-full sm:w-9/12 px-4 order-1 sm:order-2">
+              <div className="w-funll sm:w-9/12 px-4 order-1 sm:order-2">
                 <img
                   className="mb-5"
                   src="https://shuffle.dev/uinel-assets/images/ecommerce-product-info/ph-photo1.png"

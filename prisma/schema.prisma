@@ -38,11 +38,13 @@ model categorie {
 model product {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String
+  slug          String
+  price         String
   descriptions  String[]
   photo_main    String
   photo_gallery String[]
   categories    categorie @relation(fields: [categoryId], references: [id])
-  categoryId    String  @db.ObjectId
+  categoryId    String    @db.ObjectId
   show          Boolean   @default(false)
   timer         Boolean   @default(false)
   endDate       DateTime?

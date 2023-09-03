@@ -34,7 +34,7 @@ export function CategoryList(props: CategoryListProps) {
               {/* <td>{i.id}</td> */}
               <td>{i.name}</td>
               <td>{i.tags.length}</td>
-              <td className="flex flex-wrap">
+              <td className="flex gap-2">
                 {i.tags.length ? i.tags.map((tag: any, key: number) => {
                   return <div key={key + '-' + i.id} className="badge badge-outline">
                     {tag.name}
@@ -43,8 +43,8 @@ export function CategoryList(props: CategoryListProps) {
               </td>
               <td>
                 <div className="join">
-                  <button className="join-item btn  btn-neutral">Edit</button>
-                  <button onClick={() => onAction(i)} className="join-item btn  btn-neutral">Delete</button>
+                  <button className="join-item btn">Edit</button>
+                  <button onClick={() => onAction(i)} className="join-item btn">Delete</button>
                 </div>
               </td>
             </tr>
