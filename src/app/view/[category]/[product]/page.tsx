@@ -10,8 +10,8 @@ export default async function Home(props) {
 
   const productItem = await prisma.product.findFirst({
     where: {
-      name: {
-        startsWith: decodeURIComponent(product)
+      slug: {
+        equals: product
       }
     },
     include: {
@@ -110,14 +110,16 @@ export default async function Home(props) {
                     />
                   </svg>
                 </a>
-                <a className="h-30 block mb-4 mr-2 sm:mr-0" href="#">
+                {productItem?.photo_gallery.map((i) => {
+                  return <a key={i} className="h-30 block mb-4 mr-2 sm:mr-0" href="#">
                   <img
                     className="h-full w-full"
-                    src="https://shuffle.dev/uinel-assets/images/ecommerce-product-info/placeholder1.png"
+                    src={i}
                     alt=""
                     data-config-id="auto-img-1-1"
                   />
                 </a>
+                })}
                 <a className="hidden sm:block h-30 mb-4 mr-2 sm:mr-0" href="#">
                   <img
                     className="h-full w-full"
@@ -417,14 +419,6 @@ export default async function Home(props) {
           </div>
         </div>
       </div>
-      <a className="h-30 block mb-4 mr-2 sm:mr-0" href="#">
-        <img
-          className="h-full w-full"
-          src="https://shuffle.dev/uinel-assets/images/ecommerce-product-info/placeholder1.png"
-          alt=""
-          data-config-id="auto-img-1-1"
-        />
-      </a>
     </main>
   )
 }

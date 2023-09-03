@@ -24,9 +24,11 @@ export async function POST(req: any, res: any) {
   const data = await req.json();
   console.log('data', data)
 
-
   const resp = await prisma.product.create({  
-    data: data,
+    data: {
+      ...data,
+      slug: decodeURIComponent(data.name.toLowerCase().replace(/\s+/g, '-')),
+    },
   });
 
   return NextResponse.json(resp);

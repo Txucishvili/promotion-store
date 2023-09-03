@@ -38,8 +38,9 @@ model categorie {
 model product {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  slug          String
-  price         String
+  slug          String?
+  price         String?
+  rating        String?
   descriptions  String[]
   photo_main    String
   photo_gallery String[]

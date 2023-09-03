@@ -6,7 +6,7 @@ export const dynamicParams = true // true | false,
 export default async function Home(props) {
   const { params: { category } } = props;
   
-  console.log('page id', props)
+  // console.log('page id', props)
 
   const product = await prisma.product.findMany({
     include: {
@@ -18,7 +18,7 @@ export default async function Home(props) {
     }
   })
 
-  console.log('product', product)
+  // console.log('product', product)
 
 
   return (

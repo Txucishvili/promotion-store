@@ -4,6 +4,7 @@ import InputField from "@/components/InputField";
 import FormContainer, { FormRef } from "@/components/Form";
 import { ProductItem } from "@/app/api/product/route";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export type ACTION_TYPES = "EDIT" | "DELETE" | "SAVE" | 'VIEW';
 
@@ -104,7 +105,7 @@ export function CategoryList(props: ProductListProps) {
                 <th>
                   <div className="join">
                     <button
-                      onClick={() => onAction({ type: "VIEW", data: i })}
+                      onClick={() => onAction({ type: "VIEW", data: {slug: i.slug, categories: {name: i.categories.name}} })}
                       className="join-item btn"
                     >
                       View
@@ -269,6 +270,10 @@ export function ProductsPage(props: any) {
       });
       // modalStateType.current = "EDIT";
       // activeItem.current = item.data;
+    }
+
+    if (item.type == 'VIEW') {
+      window.open(window.location.origin + '/view/' + item.data.categories.name + '/' + item.data.slug, 'blank')
     }
   };
 
