@@ -3,6 +3,8 @@ import { CustomAsyncAdapter } from "@/utils/db-utils";
 import { CategoryPage } from "./index";
 import prisma from "../../../utils/prisma";
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
 	const categories = await prisma.categorie
 		.findMany({
