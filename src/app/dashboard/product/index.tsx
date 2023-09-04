@@ -177,6 +177,7 @@ export function ProductsPage(props: any) {
   //   return item
   // }, [editItemId, itemList])
 
+  
   const fetchItems = () => {
     fetch("/api/product")
       .then((r) => r.json())
