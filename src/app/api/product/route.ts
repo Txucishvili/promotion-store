@@ -9,6 +9,7 @@ import { Category } from "../category/route";
 export type ProductItem = {
   [FormFieldsEnum.id]: any;
   [FormFieldsEnum.name]: string;
+  [FormFieldsEnum.slug]: string;
   [FormFieldsEnum.descriptions]: string[];
   [FormFieldsEnum.photo_main]: string;
   [FormFieldsEnum.photo_gallery]: string[];
@@ -22,7 +23,7 @@ export type ProductItem = {
 
 export async function POST(req: any, res: any) {
   const data = await req.json();
-  console.log('data', data)
+  // console.log('data', data)
 
   const resp = await prisma.product.create({  
     data: {

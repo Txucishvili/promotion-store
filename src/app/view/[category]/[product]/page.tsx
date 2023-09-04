@@ -1,16 +1,18 @@
 import prisma from "@/utils/prisma";
+import Head from "next/head";
+import Image from "next/image";
+import { SwiperComponent } from "./Swiper";
 
 export const dynamicParams = true // true | false,
 
 
+
 export default async function Home(props) {
   const { params: { product } } = props;
-  
-  console.log('page id', decodeURIComponent(product))
 
   const productItem = await prisma.product.findFirst({
     where: {
-      slug: {
+      id: {
         equals: product
       }
     },
@@ -23,11 +25,12 @@ export default async function Home(props) {
     }
   })
 
-  console.log('product', productItem)
-
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-4 xs:p-12 lg:p-24">
+      <Head>
+        <title>{productItem?.title || 'SomeStorePage'}</title>
+      </Head>
       <div className="container mx-auto">
         <div className="flex flex-wrap -mx-4">
           <div className="w-full px-4">
@@ -88,12 +91,23 @@ export default async function Home(props) {
             </ul>
           </div>
           <div className="w-full lg:w-1/2 px-4 lg:mb-0">
-            <div className="flex -mx-4 flex-wrap items-center justify-between lg:justify-start lg:items-start xl:items-center px-4 gap-4">
+            <div className="flex -mx-4 flex-col flex-wrap items-center justify-between lg:justify-start lg:items-start xl:items-center px-4 gap-4">
 
-              
-              <div className="w-full order-2 xl:order-1 sm:w-auto min-w-max text-center flex sm:flex-col items-center justify-center">
+              <div className="flex-1 w-full rounded-2xl overflow-hidden">
+                <img
+                  className="mb-5"
+                  src={productItem?.photo_main}
+                  alt=""
+                  data-config-id="auto-img-5-1"
+                />
+                {/* <p className="text-sm text-gray-300" data-config-id="auto-txt-10-1">
+                  Roll over image to zoom in
+                </p> */}
+              </div>
+              <SwiperComponent />
+              <div className="w-full text-center flex items-center justify-center gap-4">
                 <a
-                  className="inline-block sm:mb-12 mr-4 sm:mr-0 transform -rotate-90 sm:transform-none hover:text-darkBlueGray-400"
+                  className="inline-block"
                   href="#"
                 >
                   <svg
@@ -111,44 +125,19 @@ export default async function Home(props) {
                   </svg>
                 </a>
                 {productItem?.photo_gallery.map((i) => {
-                  return <a key={i} className="h-30 block mb-4 mr-2 sm:mr-0" href="#">
-                  <img
-                    className="h-full w-full"
-                    src={i}
-                    alt=""
-                    data-config-id="auto-img-1-1"
-                  />
-                </a>
+                  return <div
+                    key={i}
+                    className="h-36 w-36 rounded-2xl overflow-hidden flex items-center justify-center block">
+                    <img
+                      className="h-full"
+                      src={i}
+                      alt=""
+                      data-config-id="auto-img-1-1"
+                    />
+                  </div>
                 })}
-                <a className="hidden sm:block h-30 mb-4 mr-2 sm:mr-0" href="#">
-                  <img
-                    className="h-full w-full"
-                    src="https://shuffle.dev/uinel-assets/images/ecommerce-product-info/placeholder2.png"
-                    alt=""
-                    data-config-id="auto-img-2-1"
-                  />
-                </a>
                 <a
-                  className="hidden sm:block h-30 mb-4 mr-2 sm:mr-0 rounded-xl border-2 border-blueGray-500"
-                  href="#"
-                >
-                  <img
-                    className="h-full w-full"
-                    src="https://shuffle.dev/uinel-assets/images/ecommerce-product-info/placeholder4.png"
-                    alt=""
-                    data-config-id="auto-img-3-1"
-                  />
-                </a>
-                <a className="h-30 block mb-4 sm:mb-12 mr-4 sm:mr-0" href="#">
-                  <img
-                    className="h-full w-full"
-                    src="https://shuffle.dev/uinel-assets/images/ecommerce-product-info/placeholder3.png"
-                    alt=""
-                    data-config-id="auto-img-4-1"
-                  />
-                </a>
-                <a
-                  className="inline-block transform -rotate-90 sm:transform-none hover:text-darkBlueGray-400"
+                  className="inline-block "
                   href="#"
                 >
                   <svg
@@ -166,17 +155,7 @@ export default async function Home(props) {
                   </svg>
                 </a>
               </div>
-              <div className="flex-1 w-funll sm:w-9/12 order-1 sm:order-2">
-                <img
-                  className="mb-5"
-                  src={productItem?.photo_main}
-                  alt=""
-                  data-config-id="auto-img-5-1"
-                />
-                {/* <p className="text-sm text-gray-300" data-config-id="auto-txt-10-1">
-                  Roll over image to zoom in
-                </p> */}
-              </div>
+
             </div>
           </div>
           <div className="w-full lg:w-1/2 px-4">
@@ -192,7 +171,7 @@ export default async function Home(props) {
                 data-config-id="auto-txt-12-1"
               >
                 {productItem?.name}
-                </h2>
+              </h2>
               <p className="flex items-center mb-6">
                 <span
                   className="mr-2 text-sm text-blue-500 font-medium"
@@ -292,7 +271,7 @@ export default async function Home(props) {
                 4.59
               </span>
             </div>
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <h4 className="mb-3 font-heading font-medium">
                 <span data-config-id="auto-txt-22-1">Color:</span>
                 <span className="text-gray-400" data-config-id="auto-txt-23-1">
@@ -311,8 +290,8 @@ export default async function Home(props) {
               <button className="inline-flex items-center justify-center p-1 rounded-full border border-transparent">
                 <div className="w-6 h-6 rounded-full bg-yellow-500" />
               </button>
-            </div>
-            <div className="mb-10">
+            </div> */}
+            {/* <div className="mb-10">
               <h4
                 className="mb-3 font-heading font-medium"
                 data-config-id="auto-txt-28-1"
@@ -324,7 +303,7 @@ export default async function Home(props) {
                 type="text"
                 placeholder={1}
               />
-            </div>
+            </div> */}
             <div className="flex flex-wrap -mx-2 mb-12">
               <div className="w-full md:w-2/3 px-2 mb-2 md:mb-0">
                 <a
@@ -416,6 +395,25 @@ export default async function Home(props) {
                 </span>
               </button>
             </div>
+          </div>
+          <hr className="divider w-full" />
+          <div className="w-full px-4 flex flex-wrap">
+            {productItem?.photo_gallery.map((i) => {
+              return <div
+                key={i}
+                className="w-1/2 px-2 py-2 flex items-center justify-center block">
+                <div
+                  key={i}
+                  className="w-full rounded-2xl overflow-hidden flex items-center justify-center block">
+                  <img
+                    className="h-full"
+                    src={i}
+                    alt=""
+                    data-config-id="auto-img-1-1"
+                  />
+                </div>
+              </div>
+            })}
           </div>
         </div>
       </div>

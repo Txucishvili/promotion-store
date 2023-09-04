@@ -11,6 +11,7 @@ export type ACTION_TYPES = "EDIT" | "DELETE" | "SAVE" | 'VIEW';
 export enum FormFieldsEnum {
   id = "id",
   name = "name",
+  slug = "slug",
   descriptions = "descriptions",
   photo_main = "photo_main",
   photo_gallery = "photo_gallery",
@@ -83,14 +84,14 @@ export function CategoryList(props: ProductListProps) {
                     <div>
                       <div className="font-bold">{i.name || "no-title"}</div>
                       <div className="text-sm opacity-50">
-                        {i.categories.name}
+                        {i.categories?.name}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td className="flex gap-2">
-                  {i.categories.tags.length ?
-                    i.categories.tags.map((t, key: number) => {
+                  {i.categories?.tags.length ?
+                    i.categories?.tags.map((t, key: number) => {
                       return (
                         <span
                           key={t.id}
@@ -105,7 +106,7 @@ export function CategoryList(props: ProductListProps) {
                 <th>
                   <div className="join">
                     <button
-                      onClick={() => onAction({ type: "VIEW", data: {slug: i.slug, categories: {name: i.categories.name}} })}
+                      onClick={() => onAction({ type: "VIEW", data: {slug: i.slug, id: i.id, categories: {name: i.categories?.name}} })}
                       className="join-item btn"
                     >
                       View
@@ -199,7 +200,7 @@ export function ProductsPage(props: any) {
       timer
     } = data;
 
-    console.log('FormData', data);
+    // console.log('FormData', data);
     // return;
 
     const desc = [descriptions]
@@ -273,7 +274,7 @@ export function ProductsPage(props: any) {
     }
 
     if (item.type == 'VIEW') {
-      window.open(window.location.origin + '/view/' + item.data.categories.name + '/' + item.data.slug, 'blank')
+      window.open(window.location.origin + '/view/' + item.data.categories.name + '/' + item.data.id, 'blank')
     }
   };
 

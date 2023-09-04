@@ -60,12 +60,12 @@ export function CategoryPage(props: any) {
   const [itemList, setItems] = useState(list);
   const formRef = useRef<FormRef>(null);
 
-  console.log('list', list)
+  // console.log('list', list)
   // return null
 
   const fetchItems = () => {
     fetch('/api/category').then((r) => r.json()).then((r) => {
-      console.log('r', r)
+      // console.log('r', r)
       setItems(r);
     })
   }
