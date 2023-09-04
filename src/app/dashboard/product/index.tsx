@@ -106,7 +106,7 @@ export function CategoryList(props: ProductListProps) {
                 <th>
                   <div className="join">
                     <button
-                      onClick={() => onAction({ type: "VIEW", data: {slug: i.slug, id: i.id, categories: {name: i.categories?.name}} })}
+                      onClick={() => onAction({ type: "VIEW", data: { slug: i.slug, id: i.id, categories: { name: i.categories?.name } } })}
                       className="join-item btn"
                     >
                       View
@@ -185,6 +185,7 @@ export function ProductsPage(props: any) {
         setItems(r);
       });
   };
+
 
   const onCategorySubmit = (data: ProductItem) => {
     const {
