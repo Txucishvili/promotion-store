@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("MONGO_PRISMA_URL") // uses connection pooling
+  provider  = "mongodb"
+  url       = env("MONGO_PRISMA_URL") // uses connection pooling
   directUrl = env("MONGO_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -40,14 +40,36 @@ model product {
   name          String
   slug          String?
   price         String?
+  newPrice      String?
   rating        String?
   descriptions  String[]
   photo_main    String
   photo_gallery String[]
   categories    categorie @relation(fields: [categoryId], references: [id])
   categoryId    String    @db.ObjectId
+  orders        order[]
   show          Boolean   @default(false)
   timer         Boolean   @default(false)
   endDate       DateTime?
   createdAt     DateTime  @default(now())
+}
+
+type orderDetails {
+  color String
+  type  String
+  size  String
+}
+
+model order {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  phoneNumber Int
+  fullName    String
+  product     product  @relation(fields: [productId], references: [id])
+  productId   String   @map("product") @db.ObjectId
+  createdAt   DateTime @default(now())
+}
+
+model contact {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  phoneNumber Int
 }

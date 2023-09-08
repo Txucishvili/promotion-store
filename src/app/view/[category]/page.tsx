@@ -15,12 +15,9 @@ export default async function Home(props) {
           tags: true
         }
       }
-    }
+    },
   })
-
-  // console.log('product', product)
-
-
+  console.log('product', product)
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-4 xs:p-12 lg:p-24">
       <div className="container mx-auto">
@@ -188,13 +185,13 @@ export default async function Home(props) {
               </h2>
               <p className="flex items-center mb-6">
                 <span
-                  className="mr-2 text-sm text-blue-500 font-medium"
+                  className="mr-2 text-sm text-parsley font-medium"
                   data-config-id="auto-txt-14-1"
                 >
-                  $
+                  GEL
                 </span>
                 <span
-                  className="text-3xl text-blue-500 font-medium"
+                  className="text-3xl text-parsley-500 font-bold"
                   data-config-id="auto-txt-15-1"
                 >
                   44.90

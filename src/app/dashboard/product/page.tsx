@@ -15,6 +15,9 @@ export default async function Home() {
 					},
 				},
 			},
+      orderBy: {
+        createdAt: 'desc'
+      }
 		})
 		.catch((e) => {
 			console.log("error", e);

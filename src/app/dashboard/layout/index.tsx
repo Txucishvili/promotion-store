@@ -2,38 +2,57 @@
 
 import Link from "next/link";
 import { NavigationItem } from "../layout";
-import { CheckFat, List, Storefront } from "@phosphor-icons/react";
-import { createElement } from "react";
-import { usePathname } from 'next/navigation';
+import {
+  CheckFat,
+  DotsThree,
+  Gear,
+  HouseSimple,
+  List,
+  ListBullets,
+  Plus,
+  Storefront,
+} from "@phosphor-icons/react";
+import { Fragment, createElement } from "react";
+import { usePathname } from "next/navigation";
 
 const CategoryIcons: any = {
   category: List,
   product: Storefront,
-  order: CheckFat
-}
+  order: CheckFat,
+  main: HouseSimple,
+  setting: Gear
+};
 
 const NavIcon = ({ name }: { name: string }) => {
-  const I = createElement(CategoryIcons[name], {
-    size: 20
+  const Component = CategoryIcons[name]
+  if (!Component) return null
+  const I = createElement(Component, {
+    size: 20,
   });
-  return I
-}
+  return I;
+};
 
-const Logo = ({active}: {active: boolean}) => {
+export const Logo = ({ active }: { active?: boolean }) => {
   return (
-    <div className={
-      ' sticky top-0 z-20 hidden items-center gap-2 bg-opacity-90 px-4 py-2 backdrop-blur lg:flex shadow-sm'
-      
-    }>
+    <div
+      className={
+        " sticky top-0 z-1 items-center gap-2 bg-opacity-90 px-4 py-2 backdrop-blur lg:flex shadow-sm"
+      }
+    >
       <Link
         href="/dashboard"
-        className={"flex-0 btn btn-ghost px-2" + ((active ? ` bg-base-300` : ''))}
+        className={"flex-0 btn btn-ghost px-2" + (active ? ` bg-base-300` : "")}
         data-svelte-h="svelte-pw6yxt"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width={32} height={32}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 256 256"
+          width={32}
+          height={32}
+        >
           <rect width="256" height="256" fill="none" />
-          <circle fill={'#1AD1A5'} cx="80" cy="216" r="16" />
-          <circle fill={'#1AD1A5'} cx="184" cy="216" r="16" />
+          <circle fill={"#1AD1A5"} cx="80" cy="216" r="16" />
+          <circle fill={"#1AD1A5"} cx="184" cy="216" r="16" />
           <path
             d="M42.29,72H224l-28.52,92.71A16,16,0,0,1,180.18,176H84.07a16,16,0,0,1-15.39-11.6L32.51,37.8A8,8,0,0,0,24.82,32H8"
             fill="none"
@@ -49,8 +68,8 @@ const Logo = ({active}: {active: boolean}) => {
         </div>
       </Link>
     </div>
-  )
-}
+  );
+};
 
 const Header = () => {
   return (
@@ -120,12 +139,15 @@ const Header = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-const DashboardLayout = ({ children, navigation }: {
-  children: React.ReactNode,
-  navigation: NavigationItem[]
+const DashboardLayout = ({
+  children,
+  navigation,
+}: {
+  children: React.ReactNode;
+  navigation: NavigationItem[];
 }) => {
   const currentRoute = usePathname();
 
@@ -135,28 +157,74 @@ const DashboardLayout = ({ children, navigation }: {
     <div>
       <div className="bg-base-100 drawer lg:drawer-open">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-content">
-          <label htmlFor="my-drawer-2" className="btn btn-primary drawer-button lg:hidden">Open drawer</label>
-          {children}
+        <div className="drawer-content relative overflow-hidden">
+          {/* <label htmlFor="my-drawer-2" className="btn btn-primary drawer-button lg:hidden">Open drawer</label> */}
+          <div className="lg:hidden navbar outline outline-2 outline-base-200 bg-base-100">
+            <div className="flex-none flex gap-2">
+              <div className="lg:hidden">
+                <label htmlFor="my-drawer-2" className="btn btn-square btn-ghost">
+                  <List size={24} />
+                </label>
+              </div>
+
+            </div>
+            <div className="flex-1">
+              {/* <div className="lg:hidden">
+                <Logo />
+              </div> */}
+              <div className="block">
+                <div className="dropdown relative z-10">
+                  <button className="flex gap-3 btn btn-outline btn-success">
+                    <Plus size={24} />
+                    <span>ახალი</span>
+                  </button>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content z-10 menu p-2 shadow-lg bg-base-200 rounded-box w-60"
+                  >
+                    <li>
+                      <a>კატეგორიის დამატება</a>
+                    </li>
+                    <li>
+                      <a>პროდუქტის დამატება</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              {/* <a className="btn btn-ghost normal-case text-xl">daisyUI</a> */}
+            </div>
+            <div className="flex-none">
+
+              {/* <button className="btn btn-square btn-ghost">
+								<DotsThree size={24} />
+							</button> */}
+            </div>
+          </div>
+          <div className="w-full overflow-[initial]">{children}</div>
         </div>
         <div className="drawer-side">
           <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
           <div className="h-full bg-base-200">
-            <Logo active={currentRoute == '/dashboard'} />
+            <Logo active={currentRoute == "/dashboard"} />
             <ul className="menu p-4 w-80">
               {navigation.map((n) => {
-                return <li key={n.slug}>
-                  <Link href={`/dashboard/${n.slug}`} className={
-                    currentRoute == `/dashboard/${n.slug}` ? 'active' : ''
-                  }>
-                    <NavIcon name={n.slug} />
-                    {n.title}
-                  </Link>
-                </li>
+
+                return (
+                  <li key={n.slug}>
+                    <Link
+                      href={`/dashboard/${n.slug == 'main' ? '' : n.slug}`}
+                      className={
+                        currentRoute == `/dashboard/${n.slug}` || currentRoute == "/dashboard" && n.slug == 'main' ? "active" : ""
+                      }
+                    >
+                      <NavIcon name={n.slug} />
+                      {n.title}
+                    </Link>
+                  </li>
+                );
               })}
             </ul>
           </div>
-
         </div>
       </div>
     </div>

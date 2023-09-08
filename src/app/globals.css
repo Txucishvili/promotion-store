@@ -29,3 +29,39 @@ body {
 body {
   font-family: 'Open Sans';
 }
+
+table {
+  table-layout: auto;
+}
+
+.top-center {
+  top: 50%;
+  transform: translateY(-50%)
+}
+
+.top\-\1\/55 {
+  top: 50%;
+  transform: translateY(-50%)
+}
+
+.outline-solid {
+  outline-style: solid;
+}
+
+.mainSwiper .swiper-wrapper {
+  /* height: inherit; */
+  /* @apply bg-gray-200 */
+}
+
+.gallerySwiper .swiper-wrapper {
+}
+
+.gallerySwiper .swiper-slide-thumb-active {
+      border: inset 4px;
+      border-color: #3db730;
+      border-style: solid;
+      /* padding: 2px; */
+}
+.mainSwiper img {
+  /* max-height: 900px; */
+}

@@ -5,8 +5,9 @@ import { DBItemType } from "@/db";
 import { FormFieldsEnum } from "@/app/dashboard/product";
 import prisma from "@/utils/prisma";
 import { Category } from "../category/route";
+import { Prisma } from "@prisma/client";
 
-export type ProductItem = {
+export type ProductModel = {
   [FormFieldsEnum.id]: any;
   [FormFieldsEnum.name]: string;
   [FormFieldsEnum.slug]: string;
@@ -21,11 +22,12 @@ export type ProductItem = {
   [FormFieldsEnum.endDate]?: Date;
 };
 
+
 export async function POST(req: any, res: any) {
   const data = await req.json();
   // console.log('data', data)
 
-  const resp = await prisma.product.create({  
+  const resp = await prisma.product.create({
     data: {
       ...data,
       slug: decodeURIComponent(data.name.toLowerCase().replace(/\s+/g, '-')),
@@ -44,12 +46,17 @@ export async function GET() {
         }
       }
     },
+    orderBy: {
+      createdAt: 'desc'
+    }
   });
   return NextResponse.json(resp);
 }
 
 export async function DELETE(req: any, res: any) {
   const id = await req.json();
+
+  console.log('id', id)
 
   const resp = await prisma.product.delete({
     where: {
@@ -61,6 +68,32 @@ export async function DELETE(req: any, res: any) {
     status: 200,
     data: resp
   });
+}
+
+export async function PUT(req: any, res: any) {
+  const { id, ...otherValues } = await req.json();
+
+  console.log('id', id, otherValues)
+  const categories = await prisma.product.update({
+    where: {
+      id: id,
+    },
+    data: {
+      ...otherValues
+      // tags: {
+      //   connectOrCreate: tags.map((tag: string) => {
+      //     return {
+      //       where: { name: tag },
+      //       create: { name: tag },
+      //     };
+      //   }),
+      // }
+    }
+  });
+
+  // console.log('categories', categories)
+
+  return NextResponse.json(categories)
 }
 
 // export async function PATCH(req: any, res: any) {
