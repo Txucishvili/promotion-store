@@ -5,8 +5,6 @@ import { AccordionList, Accordion, AccordionHeader, AccordionBody } from "@tremo
 
 export default function Home() {
 
-  console.log('Procces', process.env);
-  
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <AccordionList className="max-w-md mx-auto">

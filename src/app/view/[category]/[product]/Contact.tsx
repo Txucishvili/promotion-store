@@ -6,12 +6,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { CheckCircle, Phone, PhoneCall, Truck } from "@phosphor-icons/react";
-import { FormEvent, SyntheticEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, SyntheticEvent, useCallback, useEffect, useRef, useState } from "react";
 import { sleep } from "@/utils";
 
 type RequestStete = 'LOADING' | 'COMPLETED' | 'ERROR';
 
-export const ContanctForm = ({ productId }: any) => {
+export const ContanctForm = ({ productId, config }: any) => {
   const orderAreaRef = useRef<HTMLDivElement | null>(null);
   const [float, setFloat] = useState(false);
   const [requestState, setRequestState] = useState<RequestStete | null>(null)
@@ -83,6 +83,15 @@ export const ContanctForm = ({ productId }: any) => {
 
   }
 
+  const phoneNumbmer = useCallback(
+    () => {
+      return Number(config.phoneNumber.replaceAll(' ', ''))
+    },
+    [config],
+  );
+
+  console.log('phoneNumbmer', phoneNumbmer())
+
   return (
     <div>
       {float ? (
@@ -102,7 +111,7 @@ export const ContanctForm = ({ productId }: any) => {
             <div className="px-2">
               <a
                 className="flex w-full gap-2 py-4 px-6 items-center justify-center leading-8 font-heading font-medium tracking-tighter text-xl text-center bg-white  text-parsley-500 focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50 hover:bg-opacity-60 rounded-xl"
-                href="tel:555111222"
+                href={`tel:${phoneNumbmer()}`}
               >
                 <Phone size={32} />
                 <span className="mr-2" data-config-id="auto-txt-31-1">
@@ -128,7 +137,7 @@ export const ContanctForm = ({ productId }: any) => {
               <CheckCircle size={112} color="green" />
             </div>
             <h3 className="text-2xl mb-3 font-bold">მოთხოვნა წარმატებით გაიგზავნა</h3>
-            <p className="text-lg">ჩვენი ოპერატორი შეკვეთის დასადასტურებლად დეტალური ინფორმაციისთვის დაგიკავშირდებათ</p>
+            <p className="text-lg">ჩვენი ოპერატორი დაგიკავშირდებათ</p>
             <p className="text-lg">1 ან 2 დღეში</p>
           </div> </div> : null}
         <form onSubmit={onFormSubmit}>
@@ -190,7 +199,7 @@ export const ContanctForm = ({ productId }: any) => {
             </div>
             <div className="w-full md:w-1/3 px-2">
               <a
-                href="tel:555111222"
+                href={`tel:${phoneNumbmer()}`}
                 className="flex w-full gap-2 py-4 px-2 items-center justify-center leading-8 font-heading font-medium tracking-tighter text-xl text-center bg-white  text-parsley-500 focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50 hover:bg-opacity-60 rounded-xl"
               >
                 <Phone size={32} />

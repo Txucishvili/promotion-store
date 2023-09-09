@@ -7,11 +7,9 @@ export async function POST(req: any, res: any) {
   const { phoneNumber }: any = await req.json();
 
 
-  const resp = await prisma.contact.update({
+  const resp = await prisma.configs.update({
     where: {
-      phoneNumber: {
-        equals: phoneNumber
-      },
+      name: 'contact'
     },
     data: {
       phoneNumber
@@ -22,11 +20,10 @@ export async function POST(req: any, res: any) {
 }
 
 export async function GET() {
-  const categories = await prisma.contact.findMany({
-    take: 1,
+  const categories = await prisma.configs.findFirst({
     where: {
-      phoneNumber: {
-        equals: undefined
+      name: {
+        equals: 'contact'
       }
     }
   });
@@ -40,14 +37,14 @@ export async function GET() {
 export async function PUT(req: any, res: any) {
   const { phoneNumber, id }: any = await req.json();
 
-  const categories = await prisma.contact.update({
+  // console.log('typeof', typeof Number(phoneNumber))
+
+  const categories = await prisma.configs.update({
     data: {
-      phoneNumber: Number(phoneNumber)
+      phoneNumber: phoneNumber
     },
     where: {
-      id: {
-        equals: id
-      }
+      name : 'contact'
     }
   })
 

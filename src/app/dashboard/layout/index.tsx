@@ -10,10 +10,14 @@ import {
   List,
   ListBullets,
   Plus,
+  Power,
+  Shuffle,
+  SignOut,
   Storefront,
 } from "@phosphor-icons/react";
-import { Fragment, createElement } from "react";
-import { usePathname } from "next/navigation";
+import { Fragment, createElement, useEffect } from "react";
+import { redirect, usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 
 const CategoryIcons: any = {
   category: List,
@@ -150,6 +154,20 @@ const DashboardLayout = ({
   navigation: NavigationItem[];
 }) => {
   const currentRoute = usePathname();
+  const session = useSession();
+
+  useEffect(() => {
+    console.log('sessiong', session)
+    if (!session.data) {
+      // redirect('/auth');
+    }
+
+  }, [session])
+
+  // console.log('session, token', session)
+  // useEffect(() => {
+  //   session.update()
+  // }, [])
 
   function toggleDrawer() { }
 
@@ -159,7 +177,7 @@ const DashboardLayout = ({
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content relative overflow-hidden">
           {/* <label htmlFor="my-drawer-2" className="btn btn-primary drawer-button lg:hidden">Open drawer</label> */}
-          <div className="lg:hidden navbar outline outline-2 outline-base-200 bg-base-100">
+          <div className="navbar outline outline-2 outline-base-200 bg-base-100">
             <div className="flex-none flex gap-2">
               <div className="lg:hidden">
                 <label htmlFor="my-drawer-2" className="btn btn-square btn-ghost">
@@ -173,8 +191,8 @@ const DashboardLayout = ({
                 <Logo />
               </div> */}
               <div className="block">
-                <div className="dropdown relative z-10">
-                  <button className="flex gap-3 btn btn-outline btn-success">
+                <div className="dropdown">
+                  <button className="flex btn-sm gap-3 btn btn-outline btn-success">
                     <Plus size={24} />
                     <span>ახალი</span>
                   </button>
@@ -194,10 +212,40 @@ const DashboardLayout = ({
               {/* <a className="btn btn-ghost normal-case text-xl">daisyUI</a> */}
             </div>
             <div className="flex-none">
-
-              {/* <button className="btn btn-square btn-ghost">
-								<DotsThree size={24} />
-							</button> */}
+              {session.status == 'authenticated' ?
+                <div className="flex gap-2 items-center">
+                  <div>{session.data?.user?.email}</div>
+                  <button onClick={() => {
+                    signOut({
+                      // redirect: false,
+                      callbackUrl: '/auth'
+                    })
+                  }} className="btn btn-circle btn-sm btn-outline btn-error">
+                    <SignOut size={18} />
+                    {/* <p>გასვლა</p> */}
+                  </button>
+                  {/* <button className="btn btn-square btn-ghost">
+                                <DotsThree size={24} />
+                              </button> */}
+                  {/* <div className="dropdown dropdown-end">
+                    <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                      <div className="w-10 rounded-full">
+                        <img src="/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                      </div>
+                    </label>
+                    <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                      <li>
+                        <a className="justify-between">
+                          Profile
+                          <span className="badge">New</span>
+                        </a>
+                      </li>
+                      <li><a>Settings</a></li>
+                      <li><a>Logout</a></li>
+                    </ul>
+                  </div> */}
+                </div>
+                : null}
             </div>
           </div>
           <div className="w-full overflow-[initial]">{children}</div>
@@ -227,7 +275,7 @@ const DashboardLayout = ({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 export default DashboardLayout;

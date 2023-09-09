@@ -90,7 +90,8 @@ export function CategoryList(props: ProductListProps) {
                         </div>
                       </div>
                       <div>
-                        <div className="font-bold">{i.name || "no-title"}</div>
+                        <div className="font-bold">{i.name || "no-title"}
+                        {i.timer ?   <div className="badge badge-secondary ml-2">აქცია</div> : null}</div>
                         <div className="text-sm opacity-50">
                           {i.categories?.name}
                         </div>

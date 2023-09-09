@@ -4,59 +4,97 @@ import Image from "next/image";
 import { SwiperComponent } from "./Swiper";
 import { PhoneCall } from "@phosphor-icons/react";
 import { ContanctForm } from "./Contact";
+import CountDown from "./CountDown";
+import { Metadata, ResolvingMetadata } from "next";
+import { config } from '../../../middleware';
 
-
-export default async function Home(props) {
-  const { params: { product } } = props;
+export async function generateMetadata(
+  { params: { product }, searchParams }: any,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // read route params
+  const id = product;
 
   const productItem = await prisma.product.findFirst({
     where: {
       id: {
-        equals: product
-      }
+        equals: product,
+      },
     },
     include: {
       categories: {
         include: {
-          tags: true
-        }
-      }
+          tags: true,
+        },
+      },
     }
-  })
+  });
 
-  console.log('object', productItem)
+
+  return {
+    title: productItem?.name,
+    description: productItem?.descriptions[0],
+  }
+}
+export default async function Home(props) {
+  const {
+    params: { product },
+  } = props;
+
+  const config = await prisma.configs.findFirst({
+    where: {
+      name: 'contact',
+    },
+  });
+
+
+  const productItem = await prisma.product.findFirst({
+    where: {
+      id: {
+        equals: product,
+      },
+    },
+    include: {
+      categories: {
+        include: {
+          tags: true,
+        },
+      },
+    },
+  });
+
+  console.log("object", productItem);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-4 lg:py-9">
       <Head>
-        <title>{productItem?.title || 'SomeStorePage'}</title>
+        <title>{productItem?.title || "SomeStorePage"}</title>
       </Head>
       <div className="container mx-auto max-w-[1300px]">
         <h2
           className=" lg:hidden text-xl md:text-2xl lg:text-3xl font-heading font-bold text-center mb-4"
           data-config-id="auto-txt-12-1"
         >
-
           {productItem?.name}
         </h2>
         <div className="flex flex-wrap -mx-4">
           <div className="w-full lg:w-1/2 px-4 lg:mb-0">
             <div className="flex -mx-4 flex-col flex-wrap items-center justify-between lg:justify-start lg:items-start xl:items-center px-4 gap-4">
-
-              <SwiperComponent photos={[productItem?.photo_main].concat(productItem?.photo_gallery)} />
-
+              <SwiperComponent
+                photos={[productItem?.photo_main].concat(
+                  productItem?.photo_gallery
+                )}
+              />
             </div>
           </div>
           <div className="w-full lg:w-1/2 px-4">
             <div className="mt-6 lg:mt-0 max-w-[700] mb-6">
-
               <h2
                 className="hidden lg:block mt-4 mb-4 text-xl md:text-2xl lg:text-3xl font-heading font-bold"
                 data-config-id="auto-txt-12-1"
               >
                 {productItem?.name}
               </h2>
-
 
               <div>
                 <span
@@ -69,19 +107,60 @@ export default async function Home(props) {
 
                 <p className="flex items-center mb-6">
                   <span
-                    className="mr-2 text-sm text-parsley-500 font-medium"
-                    data-config-id="auto-txt-14-1"
-                  >
-                    GEL
-                  </span>
-                  <span
-                    className="text-3xl text-parsley-500 font-bold"
+                    className={"text-3xl font-bold" + (productItem?.timer && productItem?.newPrice ? ' line-through text-gray-500' : ' text-parsley-500 ')}
                     data-config-id="auto-txt-15-1"
                   >
-                    44.90
+                    {productItem?.price || "-"}
+                  </span>
+                  <span
+                    className={"ml-2 text-sm font-medium" + (productItem?.timer && productItem?.newPrice ? ' line-through text-gray-500' : ' text-parsley-500 ')}
+                    data-config-id="auto-txt-14-1"
+                  >
+                    ლარი
                   </span>
                 </p>
               </div>
+              {productItem?.timer && productItem?.newPrice ? (
+                <div>
+                  <span
+                    className="text-xs text-gray-400 tracking-wider"
+                    data-config-id="auto-txt-11-1"
+                  >
+                    {/* {productItem?.categories.name} */}
+                    აქციის ფასი:
+                  </span>
+
+                  <p className="flex items-center mb-6">
+                    <span
+                      className="text-3xl text-parsley-500 font-bold"
+                      data-config-id="auto-txt-15-1"
+                    >
+                      {productItem?.newPrice || "-"}
+                    </span>
+                    <span
+                      className="ml-2 text-sm text-parsley-500 font-medium"
+                      data-config-id="auto-txt-14-1"
+                    >
+                      ლარი
+                    </span>
+                  </p>
+                </div>
+              ) : null}
+
+              {productItem?.timer && productItem.endDate ? (
+                <div>
+                  <div className="divider"></div>
+                  <div
+                    className="text-xl mb-5 text-center text-gray-600 tracking-wider font-bold"
+                    data-config-id="auto-txt-11-1 "
+                  >
+                    აქციის დასრულებამდე დარჩენილია
+                  </div>
+                  <CountDown endDate={productItem.endDate} />
+                  <div className="divider"></div>
+                </div>
+              ) : null}
+
               <span
                 className="text-xs text-gray-400 tracking-wider"
                 data-config-id="auto-txt-11-1"
@@ -89,8 +168,12 @@ export default async function Home(props) {
                 {/* {productItem?.categories.name} */}
                 დეტალები:
               </span>
-              <p className="whitespace-pre-wrap text-lg text-gray-600" data-config-id="auto-txt-16-1">
-                {productItem?.descriptions[0] || 'Sorry no description'}</p>
+              <p
+                className="whitespace-pre-wrap text-lg text-gray-600"
+                data-config-id="auto-txt-16-1"
+              >
+                {productItem?.descriptions[0] || "Sorry no description"}
+              </p>
             </div>
             {/* <span
                 className="text-xs text-gray-400 tracking-wider"
@@ -213,7 +296,7 @@ export default async function Home(props) {
                 placeholder={1}
               />
             </div> */}
-            <ContanctForm productId={product} />
+            <ContanctForm productId={product} config={config} />
             {/* <div>
               <h4
                 className="mb-6 font-heading font-medium"
@@ -274,30 +357,36 @@ export default async function Home(props) {
             <div className="mb-5">
               <span className="title text-xl font-medium px-3">
                 <span>ფოტო გალერია </span>
-                <span className="text-gray-500">({productItem?.photo_gallery.length || 0})</span>
+                <span className="text-gray-500">
+                  ({productItem?.photo_gallery.length || 0})
+                </span>
               </span>
             </div>
             <div className="w-full flex flex-wrap">
               {productItem?.photo_gallery.map((i) => {
-                return <div
-                  key={i}
-                  className="w-1/2 px-2 py-2 flex items-center justify-center block">
+                return (
                   <div
                     key={i}
-                    className="w-full rounded-2xl overflow-hidden flex items-center justify-center block">
-                    <img
-                      className="h-full"
-                      src={i}
-                      alt=""
-                      data-config-id="auto-img-1-1"
-                    />
+                    className="w-1/2 px-2 py-2 flex items-center justify-center block"
+                  >
+                    <div
+                      key={i}
+                      className="w-full rounded-2xl overflow-hidden flex items-center justify-center block"
+                    >
+                      <img
+                        className="h-full"
+                        src={i}
+                        alt=""
+                        data-config-id="auto-img-1-1"
+                      />
+                    </div>
                   </div>
-                </div>
+                );
               })}
             </div>
           </div>
         </div>
       </div>
     </main>
-  )
+  );
 }

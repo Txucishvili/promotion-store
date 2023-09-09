@@ -1,8 +1,9 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { DashboardNavigation } from "./layout";
 import { Bag, CheckFat, HouseSimple, List, Rows, ShoppingCart } from "@phosphor-icons/react";
 import Link from "next/link";
+import { SessionProvider, useSession } from "next-auth/react";
 
 const IconMap: any = {
   category: <Rows size={42} />,
@@ -22,6 +23,7 @@ const dashboardNav = Array()
 
 
 export default function DashboardMainComponent({ counts }: any) {
+
   return (
     <main className="p-8 ">
       <h1 className="text-3xl mb-6">მთავარი</h1>
@@ -53,3 +55,5 @@ export default function DashboardMainComponent({ counts }: any) {
     </main>
   );
 }
+
+export {SessionProvider};
