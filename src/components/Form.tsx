@@ -46,14 +46,12 @@ const FormContainer = forwardRef<FormRef & FormComponent, FormComponent & FormCo
       return {
         form: ref.current,
         setLoading: (e: boolean) => {
-          console.log('loading', ref)
           return setLoading(e);
         },
         submit: () => {
           ref.current?.submit();
         },
         reset: () => {
-          console.log('form reset', ref)
           ref.current?.reset();
         },
         isLoading: () => {
@@ -132,7 +130,6 @@ const FormContainer = forwardRef<FormRef & FormComponent, FormComponent & FormCo
         });
       }
     }
-    // console.log("element", formFileds);
 
     if (onSubmit) {
       onSubmit(formFileds)

@@ -3,7 +3,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 
-export default function BTN() {
+export default function AuthForm() {
   const [error, setError] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const router = useRouter();
@@ -30,8 +30,6 @@ export default function BTN() {
 
       router.replace('/dashboard');
     });
-
-    console.log('res', res)
 
   }
 

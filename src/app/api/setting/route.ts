@@ -28,7 +28,6 @@ export async function GET() {
     }
   });
 
-  console.log('object', categories)
   
   return NextResponse.json(categories);
 }
@@ -37,7 +36,6 @@ export async function GET() {
 export async function PUT(req: any, res: any) {
   const { phoneNumber, id }: any = await req.json();
 
-  // console.log('typeof', typeof Number(phoneNumber))
 
   const categories = await prisma.configs.update({
     data: {
@@ -60,7 +58,6 @@ export async function DELETE(req: any, res: any) {
     },
   });
 
-  // console.log('data', data)
 
   return NextResponse.json({
     status: 200,

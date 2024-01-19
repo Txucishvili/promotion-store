@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import {fontFamily} from 'tailwindcss/defaultTheme';
 
 const rem = 0.063;
 
@@ -24,6 +25,16 @@ const config: Config = {
   theme: {
     transparent: "transparent",
     current: "currentColor",
+    listStyleType: {
+      none: 'initial',
+      // disc: 'disc',
+      // decimal: 'decimal',
+      square: 'square',
+      roman: 'upper-roman',
+    },
+    fontFamily: {
+      noto_sans: ['var(--font-NotoSans)', ...fontFamily.sans]
+    },
     extend: {
       colors: {
         // light mode

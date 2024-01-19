@@ -20,7 +20,6 @@ export default async function Home() {
 			return r;
 		})
 		.catch((e) => {
-			console.log("error", e);
 			return [];
 		});
 

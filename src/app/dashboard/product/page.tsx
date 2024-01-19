@@ -4,7 +4,7 @@ import prisma from "../../../utils/prisma";
 import { ProductsPage } from ".";
 import { Metadata } from "next";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force';
 
 export const metadata: Metadata = {
   title: 'პროდუქცია - სამართავი პანელი',
@@ -20,19 +20,19 @@ export default async function Home() {
 						tags: true,
 					},
 				},
+        orders: true
 			},
       orderBy: {
         createdAt: 'desc'
       }
 		})
 		.catch((e) => {
-			console.log("error", e);
 			return [];
 		});
 	const categories = await prisma.categorie.findMany().catch((e) => {
-		console.log("error", e);
 		return [];
 	});
+	
 
 	return (
 		<main>

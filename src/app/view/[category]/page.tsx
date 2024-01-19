@@ -6,8 +6,6 @@ export const dynamicParams = true // true | false,
 export default async function Home(props) {
   const { params: { category } } = props;
   
-  // console.log('page id', props)
-
   const product = await prisma.product.findMany({
     include: {
       categories: {
@@ -16,8 +14,11 @@ export default async function Home(props) {
         }
       }
     },
-  })
-  console.log('product', product)
+  }).catch((e) => {
+    return null
+  });
+
+  console.log('[category]',product)
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-4 xs:p-12 lg:p-24">
       <div className="container mx-auto">

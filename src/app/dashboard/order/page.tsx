@@ -13,6 +13,11 @@ export default async function Home() {
 	const listData = await prisma.order
 		.findMany({
 			include: {
+        cityRegion: {
+          select: {
+            name: true
+          }
+        },
 				product: {
           include: {
             categories: true
@@ -29,6 +34,7 @@ export default async function Home() {
 		.catch((e) => {
 			return [];
 		});
+
 
 	return (
 		<main>

@@ -25,7 +25,6 @@ export type ProductModel = {
 
 export async function POST(req: any, res: any) {
   const data = await req.json();
-  // console.log('data', data)
 
   const resp = await prisma.product.create({
     data: {
@@ -40,6 +39,7 @@ export async function POST(req: any, res: any) {
 export async function GET() {
   const resp = await prisma.product.findMany({
     include: {
+      orders: true,
       categories: {
         include: {
           tags: true
@@ -56,8 +56,15 @@ export async function GET() {
 export async function DELETE(req: any, res: any) {
   const id = await req.json();
 
-  console.log('id', id)
 
+
+  await prisma.order.deleteMany({
+    where: {
+      productId: id
+    }
+  });
+
+  
   const resp = await prisma.product.delete({
     where: {
       id,
@@ -73,7 +80,6 @@ export async function DELETE(req: any, res: any) {
 export async function PUT(req: any, res: any) {
   const { id, ...otherValues } = await req.json();
 
-  console.log('id', id, otherValues)
   const categories = await prisma.product.update({
     where: {
       id: id,
@@ -91,7 +97,6 @@ export async function PUT(req: any, res: any) {
     }
   });
 
-  // console.log('categories', categories)
 
   return NextResponse.json(categories)
 }

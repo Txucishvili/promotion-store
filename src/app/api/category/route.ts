@@ -27,7 +27,6 @@ export async function POST(req: any, res: any) {
     }
   });
 
-  // console.log('categories', categories)
 
   return NextResponse.json(categories)
 }
@@ -35,7 +34,6 @@ export async function POST(req: any, res: any) {
 export async function PUT(req: any, res: any) {
   const { id, name, tags = [] } = await req.json();
 
-  console.log('id', tags)
   const categories = await prisma.categorie.update({
     where: {
       id: id
@@ -53,7 +51,6 @@ export async function PUT(req: any, res: any) {
     }
   });
 
-  // console.log('categories', categories)
 
   return NextResponse.json(categories)
 }
@@ -76,8 +73,6 @@ export async function DELETE(req: any, res: any) {
       id: data
     }
   })
-
-  // console.log('data', data)
 
   return NextResponse.json({
     status: 200

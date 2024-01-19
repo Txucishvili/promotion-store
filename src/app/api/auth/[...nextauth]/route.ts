@@ -71,10 +71,8 @@ export const nextAuthOptions: NextAuthOptions = {
     // },
     async session(session, user, token) {
       if (user !== null) {
-        // console.log("User Account ", user);
         session.user = user;
       }
-      // console.log(session, "as session user");
       return await session;
     },
 

@@ -36,34 +36,20 @@ export function CategoryList(props: CategoryListProps) {
           <thead>
             <tr>
               <th>ID</th>
+              <th>პროდუქტი</th>
               <th>სახელი გვარი</th>
+              <th>ქალაქი/რაიონი</th>
               <th>ნომერი</th>
               <th>თარიღი</th>
-              <th>პროდუქტი</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {list.length ? list.map((i, key: number) => {
               return (
-                <tr className="hover cursor-pointer" key={i.id}>
+                <tr className="hover cursor-pointer whitespace-nowrap" key={i.id}>
                   <td>{key}</td>
-                  <td>{i.fullName}</td>
-                  <td><a href={`tel:${i.phoneNumber}`} className="underline">{i.phoneNumber}</a></td>
-                  <td>{
-                    i.createdAt ?
-                      <span>
-                        <p>{format(new Date(i.createdAt), 'EEEE', {
-                          locale: ka
-                        })}</p>
-                        <p>{format(new Date(i.createdAt), 'dd-MM-yyyy')}</p>
-                        <p>{format(new Date(i.createdAt), 'hh:mm:ss aa', {
-                          locale: ka
-                        })}</p>
-                      </span>
-                      : '-'
-                  }</td>
-                  <td className="max-w-[200px]">
+                  <td className="w-[200px]">
                     <div className="flex items-center space-x-3">
                       <div className="avatar">
                         <div className="mask mask-squircle w-12 h-12">
@@ -78,13 +64,30 @@ export function CategoryList(props: CategoryListProps) {
                         </div>
                       </div>
                       <div>
-                        <div className="font-bold max-w-[200px] text-ellipsis overflow-hidden">{i.product.name || "-"}</div>
+                        <div className="font-bold w-[300px] whitespace-normal text-ellipsis overflow-hidden">{i.product.name || "-"}</div>
                         <div className="text-sm opacity-50">
                           {i.product.categories?.name || '-'}
                         </div>
                       </div>
                     </div>
                   </td>
+                  <td>{i.fullName}</td>
+                  <td>{i.cityRegion ? i.cityRegion.name : '-'}</td>
+                  <td><a href={`tel:${i.phoneNumber}`} className="underline">{i.phoneNumber}</a></td>
+                  <td>{
+                    i.createdAt ?
+                      <span>
+                        <p>{format(new Date(i.createdAt), 'EEEE', {
+                          locale: ka
+                        })}</p>
+                        <p>{format(new Date(i.createdAt), 'dd-MM-yyyy')}</p>
+                        <p>{format(new Date(i.createdAt), 'hh:mm:ss aa', {
+                          locale: ka
+                        })}</p>
+                      </span>
+                      : '-'
+                  }</td>
+                  
                   <td>
                     <div className="join flex items-end justify-end">
                       <a href={`tel:${i.phoneNumber}`}
@@ -125,7 +128,6 @@ export function OrderPage(props: any) {
     return fetch("/api/order")
       .then((r) => r.json())
       .then((r) => {
-        console.log('r', r)
         setItems(r);
       });
   };

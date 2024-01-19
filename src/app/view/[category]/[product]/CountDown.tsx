@@ -38,7 +38,6 @@ export default function CountDown({ endDate }: { endDate: Date | string }) {
   
       // If the count down is finished, write some text
       if (distance < 0) {
-        console.log('finished')
         clearInterval(x);
         // document.getElementById("demo").innerHTML = "EXPIRED";
       }

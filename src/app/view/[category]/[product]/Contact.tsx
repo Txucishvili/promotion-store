@@ -6,16 +6,24 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { CheckCircle, Phone, PhoneCall, Truck } from "@phosphor-icons/react";
-import { FormEvent, SyntheticEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { sleep } from "@/utils";
 
-type RequestStete = 'LOADING' | 'COMPLETED' | 'ERROR';
+type RequestStete = "LOADING" | "COMPLETED" | "ERROR";
 
 export const ContanctForm = ({ productId, config }: any) => {
   const orderAreaRef = useRef<HTMLDivElement | null>(null);
   const [float, setFloat] = useState(false);
-  const [requestState, setRequestState] = useState<RequestStete | null>(null)
-  const [formStateErrors, setFormStateErrors] = useState(false)
+  const [requestState, setRequestState] = useState<RequestStete | null>(null);
+  const [formStateErrors, setFormStateErrors] = useState(false);
+  const [cityList, setCity]: any = useState(null);
 
   useEffect(() => {
     if (!orderAreaRef.current) return;
@@ -27,52 +35,71 @@ export const ContanctForm = ({ productId, config }: any) => {
     });
 
     observer.observe(orderAreaRef.current);
-  }, []);
+
+    if (cityList == null) {
+      fetch("/api/cities", {
+        method: "GET",
+      })
+        .then((r) => r.json())
+        .then((r) => {
+          setCity(r);
+        })
+        .catch((e) => {
+          setCity([])
+        });
+    }
+  }, [cityList]);
 
   const onFormSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as HTMLFormElement;
-    const fullName = target.elements.namedItem('fullName') as HTMLInputElement;
-    const phoneNumber = target.elements.namedItem('phoneNumber') as HTMLInputElement;
+    const fullName = target.elements.namedItem("fullName") as HTMLInputElement;
+    const phoneNumber = target.elements.namedItem(
+      "phoneNumber"
+    ) as HTMLInputElement;
+    const cityRegion = target.elements.namedItem(
+      "cityRegion"
+    ) as HTMLInputElement;
     const formState = {
       phoneNumber: phoneNumber.value,
       fullName: fullName.value,
-      productId
-    }
+      productId,
+      cityRegion: cityRegion.value,
+    };
 
     if (!phoneNumber.value || !fullName.value) {
-      setFormStateErrors(true)
+      setFormStateErrors(true);
       return;
     }
 
-    setRequestState('LOADING')
+    setRequestState("LOADING");
 
     fetch("/api/order", {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(formState),
-    }).then(() => {
-
-      sleep(900).then((r) => {
-        setRequestState('COMPLETED')
-      });
-
-    }).catch((e) => {
-      setRequestState('ERROR')
     })
+      .then(() => {
+        sleep(900).then((r) => {
+          setRequestState("COMPLETED");
+        });
+      })
+      .catch((e) => {
+        setRequestState("ERROR");
+      });
   };
 
   const onOrderClick = () => {
     if (!orderAreaRef.current) return;
 
     const formEl = orderAreaRef.current.parentNode as HTMLFormElement;
-    (formEl.elements[0] as HTMLInputElement).focus()
+    (formEl.elements[0] as HTMLInputElement).focus();
 
     const elRect = orderAreaRef.current.getBoundingClientRect();
     const bodyRect = document.body.getBoundingClientRect();
-    console.log('object', { bodyRect, elRect });
 
     document.scrollingElement?.scroll({
-      top: (elRect.top - bodyRect.top) - (window.innerHeight / 2) + (elRect.height / 2)
+      top:
+        elRect.top - bodyRect.top - window.innerHeight / 2 + elRect.height / 2,
     });
 
     // orderAreaRef.current.scrollIntoView({
@@ -80,17 +107,11 @@ export const ContanctForm = ({ productId, config }: any) => {
     //   block: 'center',
     //   inline: 'center'
     // })
+  };
 
-  }
-
-  const phoneNumbmer = useCallback(
-    () => {
-      return Number(config.phoneNumber.replaceAll(' ', ''))
-    },
-    [config],
-  );
-
-  console.log('phoneNumbmer', phoneNumbmer())
+  const phoneNumbmer = useCallback(() => {
+    return Number(config.phoneNumber.replaceAll(" ", ""));
+  }, [config]);
 
   return (
     <div>
@@ -127,37 +148,66 @@ export const ContanctForm = ({ productId, config }: any) => {
         id="orderForm"
         className="card overflow-hidden max-w-[700px] mx-auto mt-3 outline outline-1 outline-gray-200 shadow-lg mb-5 p p-6 ap-4"
       >
-        {requestState == 'LOADING' ?
+        {requestState == "LOADING" ? (
           <div className="overlay flex items-center justify-center absolute top-0 left-0 w-full h-full bg-base-200 opacity-60">
             <div className="loading loading-spinner text-success w-12 h-12"></div>
-          </div> : null}
-        {requestState == 'COMPLETED' ? <div className="overlay success bg-white w-full h-full absolute top-0 left-0 flex items-center justify-center">
-          <div className="w-full h-full p-6 flex items-center justify-center flex-col text-center">
-            <div className="mb-5">
-              <CheckCircle size={112} color="green" />
-            </div>
-            <h3 className="text-2xl mb-3 font-bold">მოთხოვნა წარმატებით გაიგზავნა</h3>
-            <p className="text-lg">ჩვენი ოპერატორი დაგიკავშირდებათ</p>
-            <p className="text-lg">1 ან 2 დღეში</p>
-          </div> </div> : null}
+          </div>
+        ) : null}
+        {requestState == "COMPLETED" ? (
+          <div className="overlay success bg-white w-full h-full absolute top-0 left-0 flex items-center justify-center">
+            <div className="w-full h-full p-6 flex items-center justify-center flex-col text-center">
+              <div className="mb-5">
+                <CheckCircle size={112} color="green" />
+              </div>
+              <h3 className="text-2xl mb-3 font-bold">
+                მოთხოვნა წარმატებით გაიგზავნა
+              </h3>
+              <p className="text-lg">ჩვენი ოპერატორი დაგიკავშირდებათ</p>
+            </div>{" "}
+          </div>
+        ) : null}
+
         <form onSubmit={onFormSubmit}>
           <div className="py-3">
             <h3 className="text-center text-xl font-medium mb-3">
               შეუკვეთე ახლავე
             </h3>
-            <h3 className="text-center text-gray-600 font-medium">
-              უფასო მიწოდება რაიონებში
+            <h3 className="text-left text-gray-600 font-medium">
+              <p>მიწოდების ღირებულება: </p>
+              <p><b>თბილისი - 5 ₾</b></p>
+              <p><b>რეგიონები - 10₾</b></p>
             </h3>
           </div>
           <div className="divider"></div>
-          {requestState == 'ERROR' ? <ul className="mb-4 text-error">
-            <li>სამწუხაროდ დაფიქსირდა შეცდომა გთხოვთ სცადოთ მოგვიანებით</li>
-          </ul> : null}
-          {formStateErrors ? <ul className="mb-4 text-error">
-            <li>გთხოვთ შეავსოთ ქვემოთ მოცემული ველები</li>
-          </ul> : null}
+          {requestState == "ERROR" ? (
+            <ul className="mb-4 text-error">
+              <li>სამწუხაროდ დაფიქსირდა შეცდომა გთხოვთ სცადოთ მოგვიანებით</li>
+            </ul>
+          ) : null}
+          {formStateErrors ? (
+            <ul className="mb-4 text-error">
+              <li>გთხოვთ შეავსოთ ქვემოთ მოცემული ველები</li>
+            </ul>
+          ) : null}
           <div ref={orderAreaRef} className="flex flex-col gap-4">
-            <div className="form-control">
+           <div className="form-control">
+              <span
+                className="mr-2 mb-3 text-sm"
+                data-config-id="auto-txt-31-1"
+              >
+                ქალაქი/რეგიონი:
+              </span>
+              <select 
+              placeholder="აირჩიეთ მდებარეობა"
+              className="form-input px-4 py-3 bg-white outline-2 outline-gray-300 focus-visible:outline-parsley-400 outline-solid rounded-lg"
+              name="cityRegion">
+                <option defaultValue='null' disabled>აირჩიეთ მდებარეობა</option>
+                {cityList !== null ? cityList.map((c: any, key: number) => {
+                  return <option key={key} value={c.id}>{c.name}</option>
+                }) : null}
+              </select>
+            </div>
+             <div className="form-control">
               <span
                 className="mr-2 mb-3 text-sm"
                 data-config-id="auto-txt-31-1"
@@ -171,6 +221,7 @@ export const ContanctForm = ({ productId, config }: any) => {
                 className="form-input px-4 py-3 bg-white outline-2 outline-gray-300 focus-visible:outline-parsley-400 outline-solid rounded-lg"
               />
             </div>
+            
             <div className="form-control">
               <span
                 className="mr-2 mb-3 text-sm"

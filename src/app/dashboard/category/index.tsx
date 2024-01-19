@@ -114,7 +114,6 @@ export function CategoryPage(props: any) {
       setFormState(initialFormStatet);
       formStateRef.current = null;
 
-      console.log("------------", e);
     });
   }, []);
 
@@ -146,7 +145,6 @@ export function CategoryPage(props: any) {
             window.modalform.close();
 
           }
-          console.log('ssss', formRef.current)
           formRef.current?.reset();
           formRef.current?.setLoading(false);
         }, 500);
@@ -163,7 +161,6 @@ export function CategoryPage(props: any) {
     setFormState(item.data);
     formStateRef.current = item.data;
 
-    console.log(item, formState);
 
     switch (item.action) {
       case "DELETE":

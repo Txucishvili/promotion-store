@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-async-client-component */
 import prisma from "@/utils/prisma";
-import SettingPageComponent from ".";
+import SettingPageComponent, { CityRegionList } from ".";
 import { Metadata } from "next";
 
 
@@ -15,8 +15,19 @@ export default function SettingPage(params: any) {
     <main className="p-8 ">
       <h1 className="text-3xl mb-6">პარამეტრები</h1>
       <div className="divider"></div>
-      <div className="card max-w-md">
-        <SettingPageComponent />
+      <div className="lg:flex gap-2">
+        <div className="box w-full lg:w-[450px]">
+          <h3 className="text-xl pl-3 mb-4">კონტაქტი</h3>
+          <div className="card bg-base-300 p-4">
+            <SettingPageComponent />
+          </div>
+        </div>
+        <div className="box w-full lg:w-[350px]">
+          <h3 className="text-xl pl-3 mb-4">შეკვეთის ქალაქი/რაიონი</h3>
+          <div className="card bg-base-300 p-4 w-full">
+            <CityRegionList />
+          </div>
+        </div>
       </div>
     </main>
   )

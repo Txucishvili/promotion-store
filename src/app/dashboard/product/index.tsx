@@ -7,14 +7,25 @@ import {
   useRef,
   useState,
 } from "react";
-import InputField from "@/components/InputField";
+import InputField, { FormSelect } from "@/components/InputField";
 import FormContainer, { FormRef } from "@/components/Form";
 import { ProductModel } from "@/app/api/product/route";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { ModalConfirmation, OnListAction } from "@/utils/action-types";
 import { Prisma } from "@prisma/client";
-import { ArrowSquareOut, Pencil, Trash } from "@phosphor-icons/react";
+import {
+  ArrowSquareOut,
+  Copy,
+  Pencil,
+  Trash,
+  TrashSimple,
+} from "@phosphor-icons/react";
+
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import Quill from "quill";
+import Form, { Field, useForm } from 'rc-field-form';
 
 export enum FormFieldsEnum {
   id = "id",
@@ -34,7 +45,7 @@ export enum FormFieldsEnum {
   orders = "orders",
 }
 
-export type ListActions = "EDIT" | "VIEW" | "DELETE";
+export type ListActions = "EDIT" | "VIEW" | "DELETE" | "COPY";
 
 interface ProductListProps {
   list: ProductModel[];
@@ -45,6 +56,15 @@ interface ProductListProps {
 
 export function CategoryList(props: ProductListProps) {
   const { list, onAction, categories } = props;
+  const copyRef = useRef();
+
+  const refsById = useMemo(() => {
+    const refs: any = {};
+    list.forEach((item: any, index: number) => {
+      refs[index] = createRef();
+    });
+    return refs;
+  }, [list]);
 
   return (
     <div className="overflow-x-auto">
@@ -67,9 +87,12 @@ export function CategoryList(props: ProductListProps) {
         <tbody>
           {/* row 1 */}
           {list.length ? (
-            list.map((i) => {
+            list.map((i, k: number) => {
               return (
-                <tr key={i.id} className="hover">
+                <tr
+                  key={i.id}
+                  className="hover focus-visible:bg-gray-500 whitespace-nowrap lg:whitespace-normal"
+                >
                   <th>
                     <label>
                       <input type="checkbox" className="checkbox" />
@@ -90,8 +113,14 @@ export function CategoryList(props: ProductListProps) {
                         </div>
                       </div>
                       <div>
-                        <div className="font-bold">{i.name || "no-title"}
-                        {i.timer ?   <div className="badge badge-secondary ml-2">აქცია</div> : null}</div>
+                        <div className="font-bold w-[350px] text-ellipsis overflow-hidden">
+                          {i.name || "no-title"}
+                          {i.timer ? (
+                            <div className="badge badge-secondary ml-2">
+                              აქცია
+                            </div>
+                          ) : null}
+                        </div>
                         <div className="text-sm opacity-50">
                           {i.categories?.name}
                         </div>
@@ -101,18 +130,18 @@ export function CategoryList(props: ProductListProps) {
                   <td className="flex gap-2">
                     {i.categories?.tags.length
                       ? i.categories?.tags.map((t, key: number) => {
-                        return (
-                          <span
-                            key={t.id}
-                            className="badge badge-outline badge-sm"
-                          >
-                            {t.name}
-                          </span>
-                        );
-                      })
+                          return (
+                            <span
+                              key={t.id}
+                              className="badge badge-outline badge-sm"
+                            >
+                              {t.name}
+                            </span>
+                          );
+                        })
                       : null}
                   </td>
-                  <td>{i.orders || 0}</td>
+                  <td>{i.orders.length || 0}</td>
                   <th>
                     <div className="join flex items-end justify-end">
                       <button
@@ -126,6 +155,33 @@ export function CategoryList(props: ProductListProps) {
                       >
                         <ArrowSquareOut size={18} />
                         გახსნა
+                      </button>
+                      <button
+                        onClick={() =>
+                          onAction({
+                            action: "COPY",
+                            data: i,
+                            ref: refsById[k],
+                          })
+                        }
+                        // data-tip="Copied!"
+                        className="join-item btn tooltip tooltip-success"
+                      >
+                        <Copy size={18} />
+                        <div className="visible-[hidden] w-0 h-0 overflow-hidden">
+                          <input
+                            className=""
+                            type="text"
+                            ref={refsById[k]}
+                            defaultValue={
+                              window.location.origin +
+                              "/view/" +
+                              i.categories?.name +
+                              "/" +
+                              i.id
+                            }
+                          />
+                        </div>
                       </button>
                       <button
                         onClick={() => onAction({ action: "EDIT", data: i })}
@@ -172,16 +228,36 @@ function DynamicPhoto(parameters: any): any {
     setFields(newFields);
   };
 
+  const removeField = (key: number) => {
+    const _fields = [...fields].filter((f, k) => k != key);
+    console.log(key, _fields);
+    setFields(_fields);
+  };
+
   return (
     <Fragment>
       {fields.map((f, k) => {
         return (
-          <InputField
-            key={k}
-            value={f}
-            name={`photo_gallery`}
-            label={`ფოტო ${k + 1}`}
-          />
+          <div key={k} className="flex gap-1 items-end">
+            <InputField
+              // key={k}
+              value={f}
+              className="flex-1"
+              name={`photo_gallery`}
+              label={`ფოტო ${k + 1}`}
+            />
+            {f.length ? (
+              <div>
+                <button
+                  className="btn btn-error"
+                  type="button"
+                  onClick={() => removeField(k)}
+                >
+                  <TrashSimple size={22} />
+                </button>
+              </div>
+            ) : null}
+          </div>
         );
       })}
       <div className="py-4">
@@ -197,6 +273,21 @@ function DynamicPhoto(parameters: any): any {
   );
 }
 
+// let Inline = Quill.import('blots/inline');
+// class BoldBlot extends Inline {}
+// BoldBlot.blotName = 'bold';
+// BoldBlot.tagName = 'strong';
+// Quill.register('formats/bold', BoldBlot);
+
+// var BackgroundClass = Quill.import('attributors/class/background');
+// var ColorClass = Quill.import('attributors/class/color');
+// var SizeStyle = Quill.import('attributors/style/size');
+// Quill.register(BackgroundClass, false);
+// Quill.register(ColorClass, false);
+// Quill.register(SizeStyle, false);
+
+const formats = ["bold"]; // add custom format name + any built-in formats you need
+
 const initialFormState = {
   [FormFieldsEnum.name]: "",
   [FormFieldsEnum.price]: "",
@@ -207,15 +298,21 @@ const initialFormState = {
   [FormFieldsEnum.endDate]: "",
   [FormFieldsEnum.show]: true,
   [FormFieldsEnum.photo_main]: "",
-  [FormFieldsEnum.photo_gallery]: "",
+  [FormFieldsEnum.photo_gallery]: [""],
 };
 
 export function ProductsPage(props: any) {
   const { list = [], categories = [] } = props;
   const [itemList, setItems] = useState(list);
+  const [value, setValue] = useState("");
   const formRef = createRef<FormRef>();
+  const quilRef = useRef(null);
 
-  const [formState, setFormState] = useState<any>(initialFormState);
+  const [formRefState] = useForm();
+  
+  console.log("list", list);
+
+  const [formState, setFormState] = useState<any>({ ...initialFormState });
   const [formMode, setFormMode] = useState<ListActions | null>(null);
   const activeItemRef = useRef<ProductModel | null>(null);
 
@@ -223,7 +320,6 @@ export function ProductsPage(props: any) {
     return fetch("/api/product")
       .then((r) => r.json())
       .then((r) => {
-        // console.log("fetch", r);
         setItems(r);
       });
   };
@@ -235,14 +331,15 @@ export function ProductsPage(props: any) {
   }, [formMode]);
 
   useEffect(() => {
+    // if (!window) {return}
     window.modalform.addEventListener("close", (e) => {
       setFormMode(null);
-      setFormState(initialFormState);
+      setFormState({ ...initialFormState });
       formRef.current?.reset();
     });
   }, []);
 
-  const updateForm = (value) => { };
+  const updateForm = (value) => {};
 
   const onCategorySubmit = (data: ProductModel) => {
     const {
@@ -258,22 +355,28 @@ export function ProductsPage(props: any) {
       timer,
     } = data;
 
-    const desc = [descriptions];
+    console.log(data);
+
+    const desc = [value];
     let METHOD = "POST";
     const payload = {};
 
     if (formMode == "EDIT") {
       METHOD = "PUT";
-      Object.assign(payload, { id: activeItemRef.current?.id, categoryId: data.categoryId });
+      Object.assign(payload, {
+        id: activeItemRef.current?.id,
+        categoryId: categoryId,
+        descriptions: value,
+      });
+      console.log("-quilRef.current", quilRef.current);
+      console.log("-formState", formState);
+      // return;
     } else {
       Object.assign(payload, data);
     }
 
 
-
     formRef.current?.setLoading(true);
-
-    console.log('data', data)
 
     fetch("/api/product", {
       method: METHOD,
@@ -281,14 +384,16 @@ export function ProductsPage(props: any) {
         Object.assign(payload, {
           name: data.name,
           price: data.price,
-          newPrice: data.newPrice || '',
+          newPrice: data.newPrice || "",
           descriptions: desc,
           timer: data.timer,
           endDate: data.endDate ? new Date(data.endDate) : null,
           show: data.show,
           photo_main: data.photo_main,
           photo_gallery:
-            typeof photo_gallery === "string" ? [photo_gallery] : photo_gallery,
+            typeof photo_gallery === "string"
+              ? [photo_gallery]
+              : photo_gallery.filter((i) => i.length),
         })
       ),
     })
@@ -296,7 +401,6 @@ export function ProductsPage(props: any) {
         return r.json();
       })
       .then((r: any) => {
-
         if (formMode == "EDIT") {
           setFormState(r);
           activeItemRef.current = r;
@@ -316,6 +420,16 @@ export function ProductsPage(props: any) {
   const onListAction = (e: OnListAction<ListActions, ProductModel>) => {
     const { id, categoryId, slug, ...formData } = e.data;
 
+    // console.log("E - Date", e.data);
+    // console.log("E - formRefState", formRefState);
+    // formRefState.setFieldsValue({
+
+    // })
+
+
+
+
+    // return;
     switch (e.action) {
       case "DELETE":
         setFormState({ ...formData, endDate: getDateValue(formData.endDate) });
@@ -324,21 +438,37 @@ export function ProductsPage(props: any) {
         window.modalConfirm.showModal();
         break;
       case "EDIT":
-        setFormState({ ...formData, endDate: getDateValue(formData.endDate) });
+        setFormState({
+          ...formData,
+          categoryId: e.data.categoryId,
+          endDate: getDateValue(formData.endDate),
+        });
         setFormMode(e.action);
+        // setValue(e.data.descriptions[0])
+        quilRef.current.setEditorContents(
+          quilRef.current.editor,
+          e.data.descriptions[0]
+        );
+        console.log("quill", quilRef.current);
         activeItemRef.current = e.data;
         window.modalform.showModal();
         break;
       case "VIEW":
         window.open(
           window.location.origin +
-          "/view/" +
-          e.data?.categories?.name +
-          "/" +
-          e.data.id,
+            "/view/" +
+            e.data?.categories?.name +
+            "/" +
+            e.data.id,
           "blank"
         );
         // activeRef.current = item.data;
+        break;
+      case "COPY":
+        if (e.ref.current) {
+          e.ref.current.select();
+          document.execCommand("copy");
+        }
         break;
       default:
         break;
@@ -392,6 +522,14 @@ export function ProductsPage(props: any) {
 
   return (
     <Fragment>
+      {/* <div className="toast toast-bottom z-10 toast-center">
+        <div className="alert alert-info">
+          <span>New mail arrived.</span>
+        </div>
+        <div className="alert alert-success">
+          <span>Message sent successfully.</span>
+        </div>
+      </div> */}
       <dialog id="modalform" className="modal">
         <div className="modal-box">
           <FormContainer
@@ -402,7 +540,6 @@ export function ProductsPage(props: any) {
                 : "პროდუქტის დამატება"
             }
             onSubmit={(e) => {
-              console.log("-----", e);
               onCategorySubmit(e);
             }}
           >
@@ -443,15 +580,44 @@ export function ProductsPage(props: any) {
                 <span className="label-text">აღწერა</span>
                 {/* <span className="label-text-alt">Alt label</span> */}
               </label>
-              <textarea
-                className="textarea textarea-bordered h-24"
-                placeholder="Bio"
+              <ReactQuill
+                ref={quilRef}
+                theme="snow"
                 defaultValue={formState[FormFieldsEnum.descriptions]}
-                name={FormFieldsEnum.descriptions}
-              ></textarea>
+                // name={FormFieldsEnum.descriptions}
+                modules={{
+                  toolbar: [
+                    ["bold", "italic", "underline", "strike"], // toggled buttons
+                    ["blockquote", "code-block"],
+                    [{ align: [] }],
+                    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+
+                    [{ header: 1 }, { header: 2 }], // custom button values
+                    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+                    [{ list: "ordered" }, { list: "bullet" }],
+
+                    // [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+
+                    [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+                    // [{ 'direction': 'rtl' }],                         // text direction
+
+                    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+                    [{ font: [] }],
+
+                    // ['clean']                                         // remove formatting button
+                  ],
+                }}
+                // formats={formats}
+                onChange={setValue}
+              />
+              {/* <textarea
+                className="textarea textarea-bordered h-24"
+                // placeholder="აღწერა"
+                defaultValue={formState[FormFieldsEnum.descriptions]}
+              ></textarea> */}
             </div>
             <div className="form-control">
-              {formState[FormFieldsEnum.timer].toString()}
               <label className="label cursor-pointer">
                 <span className="label-text">აქცია:</span>
                 <input
@@ -464,33 +630,34 @@ export function ProductsPage(props: any) {
                   type="checkbox"
                   className="toggle"
                   name={FormFieldsEnum.timer}
-                  defaultChecked={formState[FormFieldsEnum.timer]}
+                  checked={formState[FormFieldsEnum.timer]}
                 />
               </label>
             </div>
-            {formState[FormFieldsEnum.timer] ? <div>
-              <div className="divider"></div>
-              <InputField
-                name={FormFieldsEnum.newPrice}
-                label={"აქციის ფასი"}
-                type={"text"}
-                value={formState[FormFieldsEnum.newPrice]}
-              />
-              <InputField
-                onChange={(e) => {
-                  setFormState({
-                    ...formState,
-                    endDate: getDateValue(e.target.value),
-                  });
-                }}
-                name={FormFieldsEnum.endDate}
-                label={"აქციის დასრულების თარიღი"}
-                type={"date"}
-                value={formState[FormFieldsEnum.endDate]}
-              />
-              <div className="divider"></div>
-
-            </div> : null}
+            {formState[FormFieldsEnum.timer] ? (
+              <div>
+                <div className="divider"></div>
+                <InputField
+                  name={FormFieldsEnum.newPrice}
+                  label={"აქციის ფასი"}
+                  type={"text"}
+                  value={formState[FormFieldsEnum.newPrice]}
+                />
+                <InputField
+                  onChange={(e) => {
+                    setFormState({
+                      ...formState,
+                      endDate: getDateValue(e.target.value),
+                    });
+                  }}
+                  name={FormFieldsEnum.endDate}
+                  label={"აქციის დასრულების თარიღი"}
+                  type={"date"}
+                  value={formState[FormFieldsEnum.endDate]}
+                />
+                <div className="divider"></div>
+              </div>
+            ) : null}
             <div className="form-control">
               <label className="label cursor-pointer">
                 <span className="label-text">გამოჩენა:</span>
@@ -564,12 +731,39 @@ export function ProductsPage(props: any) {
           <h1 className="text-xl">პროდუქცია - ({itemList.length})</h1>
         </div>
         <div className="div">
-          <button className="btn" onClick={() => window.modalform.showModal()}>
+          <button
+            className="btn"
+            onClick={() => {
+              formRef.current?.reset();
+              window.modalform.showModal();
+            }}
+          >
             პროდუქტის დამატება
           </button>
         </div>
       </div>
       <br />
+      {/* <Form
+      initialValues={{
+        username: 'some',
+        password: 'somePass',
+        select: '3'
+      }}
+      onFinish={(values) => {
+        console.log("Finish:", values);
+      }}
+    >
+      <Field name="username">
+        <InputField placeholder="Username" />
+      </Field>
+      <Field name="password">
+        <InputField placeholder="Password" />
+      </Field>
+      <Field name='select'>
+        <FormSelect fields={[{id: 1, name: 'some'},{id: 2, name: 'some 2'},{id: 3, name: 'some 3'}]} />
+        </Field>
+      <button>Submit</button>
+    </Form> */}
       <CategoryList
         categories={categories}
         list={itemList}

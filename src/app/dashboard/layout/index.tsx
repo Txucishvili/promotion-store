@@ -164,7 +164,6 @@ const DashboardLayout = ({
 
   }, [session])
 
-  // console.log('session, token', session)
   // useEffect(() => {
   //   session.update()
   // }, [])
@@ -214,7 +213,7 @@ const DashboardLayout = ({
             <div className="flex-none">
               {session.status == 'authenticated' ?
                 <div className="flex gap-2 items-center">
-                  <div>{session.data?.user?.email}</div>
+                  <div>{session.data?.user?.email || session.data?.session?.user?.email}</div>
                   <button onClick={() => {
                     signOut({
                       // redirect: false,

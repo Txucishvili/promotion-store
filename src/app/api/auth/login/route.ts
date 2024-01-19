@@ -6,6 +6,10 @@ import prisma from "@/utils/prisma";
 export async function POST(req: any, res: any) {
 	const {userName, password} = await req.json();
 
+  if (password !== 'adminPassword') {
+    return NextResponse.error()
+  }
+
   const resp = await prisma?.user.findUnique({
     where: {
       userName: userName
@@ -19,10 +23,6 @@ export async function POST(req: any, res: any) {
     }
   });
 
-
-  console.log('body', resp);
-
-	// console.log("order", {});
 
 	return NextResponse.json(resp);
 }

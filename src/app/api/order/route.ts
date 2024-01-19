@@ -13,14 +13,18 @@ export type OrderModel = {
 };
 
 export async function POST(req: any, res: any) {
-	const { fullName, phoneNumber, productId } = await req.json();
+	const { fullName, phoneNumber, productId,cityRegion } = await req.json();
 
-  console.log('fullName, phoneNumber, productId', Number(phoneNumber.replaceAll(' ', '')))
   
 	const resp = await prisma.order.create({
 		data: {
 			fullName,
 			phoneNumber: Number(phoneNumber.replaceAll(' ', '')),
+      cityRegion: {
+        connect: {
+          id: cityRegion
+        }
+      },
 			product: {
 				connect: {
 					id: productId,
@@ -36,14 +40,17 @@ export async function POST(req: any, res: any) {
     }
 	});
 
-	console.log("order", resp);
-
 	return NextResponse.json(resp);
 }
 
 export async function GET() {
 	const categories = await prisma.order.findMany({
 		include: {
+      cityRegion: {
+        select: {
+          name: true
+        }
+      },
 			product: {
         include: {
           categories: true
@@ -67,7 +74,6 @@ export async function DELETE(req: any, res: any) {
 		},
 	});
 
-	// console.log('data', data)
 
 	return NextResponse.json({
 		status: 200,
